@@ -1,0 +1,27 @@
+/* TodoList.css */
+.todo-list {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .list-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .add-task {
+    background-color: #404144;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 4px;
+  }
+  
+  .add-task::placeholder {
+    color: #ccc;
+  }
+  
