@@ -6,6 +6,7 @@ import ManageCompanies from './ManageCompanies';
 import {fetchCompanies} from './slices/companiesSlice'
 import ManageToDo from './ManageToDo';
 import {useDispatch} from 'react-redux'
+import NewCompanyForm from './NewCompanyForm'
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/manage-companies" element={<ManageCompanies />} />
         <Route path="/manage-contacts" element={<ManageContacts />} />
         <Route path="/manage-todo" element={<ManageToDo />} />
+        <Route path = "/add-company" element={<NewCompanyForm/>} />
       </Routes>
     </Router>
   );

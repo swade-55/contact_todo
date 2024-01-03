@@ -22,6 +22,20 @@ export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (c
   return data;
 });
 
+export const fetchAllContacts = createAsyncThunk('contacts/fetchAllContacts', async (companyId) => {
+  const url = `http://localhost:5000/contacts-lists`; // Update the URL to match your Flask route
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    // If the response is not ok, throw an error
+    const errorData = await response.text();
+    throw new Error(errorData || 'Could not fetch contacts');
+  }
+  
+  const data = await response.json();
+  return data;
+});
+
 export const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
@@ -39,6 +53,18 @@ export const contactsSlice = createSlice({
         state.contacts = action.payload;
       })
       .addCase(fetchContacts.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(fetchAllContacts.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchAllContacts.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // The payload should now be an array of contacts, each with their own lists
+        state.contacts = action.payload;
+      })
+      .addCase(fetchAllContacts.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       });

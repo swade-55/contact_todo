@@ -22,15 +22,6 @@ def get_contacts(company_id):
         # Handle general exceptions
         return jsonify({'message': str(e)}), 500
 
-@app.route('/lists/<int:contact_id>', methods=['GET'])
-def get_lists(contact_id):
-    lists = ToDoList.query.filter_by(contact_id=contact_id).all()
-    return jsonify([todo_list.to_dict(rules=('-contact', '-todos')) for todo_list in lists])
-
-@app.route('/todos/<int:list_id>', methods=['GET'])
-def get_todos(list_id):
-    todos = ToDo.query.filter_by(list_id=list_id).all()
-    return jsonify([todo.to_dict(rules=('-list', '-tags')) for todo in todos])
     
 @app.route('/contacts',methods=['POST'])
 def add_contact():
@@ -45,16 +36,6 @@ def add_contact():
     db.session.commit()
     return jsonify(new_contact.to_dict()),201
 
-@app.route('/companies',methods=['POST'])
-def add_company():
-    data = request.json
-    new_company = Company(
-        name=data['name'],
-        manager_id=data['manager_id']
-    )
-    db.session.add(new_company)
-    db.session.commit()
-    return jsonify(new_company.to_dict()),201
 
 @app.route('/todos', methods=['POST'])
 def add_todo():
@@ -184,9 +165,119 @@ def get_all_lists_and_todos():
     except Exception as e:
         # Handle general exceptions
         return jsonify({'message': str(e)}), 500
+    
+    
+@app.route('/contacts-lists', methods=['GET'])
+def get_all_contacts_and_lists():
+    try:
+        # Retrieve the contacts for the company
+        contacts = Contact.query.all()
+        if not contacts:
+            return jsonify({'message': 'No contacts found for this company'}), 404
+        
+        # For each contact, retrieve the lists and serialize the data
+        contacts_data = []
+        for contact in contacts:
+            # Serialize the contact data
+            contact_data = contact.to_dict(rules=('-company', '-todo_lists', '-manager'))
+            
+            # Retrieve, serialize the lists for this contact, and include todos
+            lists_data = []
+            todo_lists = ToDoList.query.filter_by(contact_id=contact.id).all()
+            for todo_list in todo_lists:
+                # Serialize list data
+                list_data = todo_list.to_dict(rules=('-contact', '-todos'))
+                # Retrieve and serialize todos for this list
+                todos = ToDo.query.filter_by(list_id=todo_list.id).all()
+                list_data['todos'] = [todo.to_dict() for todo in todos]
+                lists_data.append(list_data)
+            
+            # Add the lists data with todos to the contact's dictionary
+            contact_data['lists'] = lists_data
+            
+            # Append the contact data to the contacts_data list
+            contacts_data.append(contact_data)
+    
+        # Return the combined data
+        return jsonify(contacts_data)
+    except Exception as e:
+        # Handle general exceptions
+        return jsonify({'message': str(e)}), 500
 
 
+@app.route('/lists/<int:contact_id>', methods=['GET'])
+def get_lists(contact_id):
+    lists = ToDoList.query.filter_by(contact_id=contact_id).all()
+    return jsonify([todo_list.to_dict(rules=('-contact', '-todos')) for todo_list in lists])
 
+@app.route('/todos/<int:list_id>', methods=['GET'])
+def get_todos(list_id):
+    todos = ToDo.query.filter_by(list_id=list_id).all()
+    return jsonify([todo.to_dict(rules=('-list', '-tags')) for todo in todos])
+
+
+@app.route('/lists-for-contact/<int:contact_id>', methods=['GET'])
+def get_lists_for_contact(contact_id):
+    try:
+        todo_lists = ToDoList.query.filter_by(contact_id=contact_id).all()
+        lists_data = [list_.to_dict() for list_ in todo_lists]  # Assuming a to_dict method is available
+        return jsonify(lists_data), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+    
+@app.route('/companies/<int:company_id>', methods=['PUT', 'PATCH'])
+def update_company(company_id):
+    try:
+        # Fetch the company based on company_id
+        company = Company.query.get(company_id)
+        if not company:
+            return jsonify({'message': 'Company not found'}), 404
+
+        data = request.json
+        if 'name' in data:
+            company.name = data['name']
+        
+        if 'manager_id' in data:
+            manager = User.query.get(data['manager_id'])
+            if not manager:
+                return jsonify({'message': 'Manager not found'}), 404
+            company.manager_id = data['manager_id']
+        
+        db.session.commit()
+        return jsonify(company.to_dict()), 200
+    except Exception as e:
+        # Handle exceptions and errors
+        return jsonify({'message': str(e)}), 500
+    
+
+@app.route('/companies', methods=['POST'])
+def add_company():
+    try:
+        # Extract data from the request
+        data = request.json
+        name = data.get('name')
+        manager_id = data.get('manager_id')
+
+        # Validate required fields
+        if not name or not manager_id:
+            return jsonify({'message': 'Name and Manager ID are required'}), 400
+
+        # Check if manager exists
+        manager = User.query.get(manager_id)
+        if not manager:
+            return jsonify({'message': 'Manager not found'}), 404
+
+        # Create a new company instance
+        new_company = Company(name=name, manager_id=manager_id)
+
+        # Add the new company to the database
+        db.session.add(new_company)
+        db.session.commit()
+
+        return jsonify(new_company.to_dict()), 201
+    except Exception as e:
+        # Handle exceptions and errors
+        return jsonify({'message': str(e)}), 500
 
   
 if __name__ == '__main__':

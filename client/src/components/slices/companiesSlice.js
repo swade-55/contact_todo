@@ -23,7 +23,46 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
     console.log('Fetched companies:', data);
     return data;
   });
+
+  export const addCompany = createAsyncThunk('companies/addCompany', async (companyData, { rejectWithValue }) => {
+    try {
+      const response = await fetch('http://localhost:5000/companies', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(companyData),
+      });
   
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      return response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  });
+  
+  export const updateCompany = createAsyncThunk('companies/updateCompany', async (companyData, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`http://localhost:5000/companies/${companyData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(companyData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      return response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  });
 
 export const companiesSlice = createSlice({
   name: 'companies',

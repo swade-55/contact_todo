@@ -1,41 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchContacts } from './slices/contactsSlice';
-import { fetchListsAndTodosForContact } from './slices/listsSlice';
+import { fetchAllContacts } from './slices/contactsSlice';
+import ContactListsSidebar from './ContactListsSidebar';
+import ListsDisplay from './ListsDisplay'; // New import for the ListsDisplay component
 
 const ManageToDo = () => {
   const dispatch = useDispatch();
   const [selectedContactId, setSelectedContactId] = useState('');
   const contacts = useSelector((state) => state.contacts.contacts);
-  const lists = useSelector((state) => state.lists.lists);
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(fetchAllContacts());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log('Contacts:', contacts); // Log to check if contacts are loaded
-    if (selectedContactId) {
-      dispatch(fetchListsAndTodosForContact(selectedContactId));
-    }
-  }, [selectedContactId, dispatch, contacts]);
-
-  const handleContactChange = (e) => {
-    setSelectedContactId(e.target.value);
+  const handleContactSelect = (contactId) => {
+    setSelectedContactId(contactId);
   };
 
   return (
-    <div>
-      <select onChange={handleContactChange} value={selectedContactId}>
-        <option value="">Select Contact</option>
-        {contacts.map((contact) => (
-          <option key={contact.id} value={contact.id}>
-            {contact.name}
-          </option>
-        ))}
-      </select>
-
-      {/* Sidebar and main container logic as before */}
+    <div style={{ display: 'flex' }}>
+      <div style={{ width: '250px' }}> {/* Adjusted for better layout */}
+        {/* Assuming ContactListsSidebar is now used to select a contact */}
+        <ContactListsSidebar onContactSelect={handleContactSelect} />
+      </div>
+      <div style={{ flexGrow: 1, padding: '0 20px' }}> {/* Adjusted for better layout */}
+        {/* Render ListsDisplay when a contact is selected */}
+        {selectedContactId && <ListsDisplay selectedContactId={selectedContactId} />}
+      </div>
     </div>
   );
 };
