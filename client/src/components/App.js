@@ -7,6 +7,11 @@ import {fetchCompanies} from './slices/companiesSlice'
 import ManageToDo from './ManageToDo';
 import {useDispatch} from 'react-redux'
 import NewCompanyForm from './NewCompanyForm'
+import NewContactForm from './NewContactForm'
+import NewUserForm from './NewUserForm'
+import {fetchAllContacts} from './slices/contactsSlice'
+
+
 
 function App() {
 
@@ -15,6 +20,7 @@ function App() {
   useEffect(() => {
     const userId = 1;
     dispatch(fetchCompanies(userId));
+    dispatch(fetchAllContacts());
   }, [dispatch]);
   return (
     <Router>
@@ -24,12 +30,13 @@ function App() {
         <Route path="/manage-contacts" element={<ManageContacts />} />
         <Route path="/manage-todo" element={<ManageToDo />} />
         <Route path = "/add-company" element={<NewCompanyForm/>} />
+        <Route path = "/add-contact" element={<NewContactForm/>} />
+        <Route path = "/add-user" element={<NewUserForm/>} />
       </Routes>
     </Router>
   );
 }
 
-// Layout component that includes the header, navigation, and footer
 function Layout() {
   return (
     <div className="app">

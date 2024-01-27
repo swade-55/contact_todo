@@ -2,6 +2,28 @@ from flask import Flask, jsonify, request, abort
 from models import db, User, Company, Contact, ToDoList, ToDo
 from config import app
 from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.security import generate_password_hash
+
+
+@app.route('/users', methods=['POST'])
+def create_user():
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+
+    # Check if user already exists
+    if User.query.filter((User.username == username) | (User.email == email)).first():
+        return jsonify({'message': 'User already exists'}), 409
+
+    # Hash password
+    hashed_password = generate_password_hash(password)
+
+    new_user = User(username=username, email=email, password_hash=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify(new_user.serialize()), 201
 
 @app.route('/companies/<int:user_id>', methods=['GET'])
 def get_companies(user_id):
@@ -15,11 +37,9 @@ def get_contacts(company_id):
     try:
         contacts = Contact.query.filter_by(company_id=company_id).all()
         if not contacts:
-            # No contacts found for the company_id
             return jsonify({'message': 'No contacts found for this company'}), 404
-        return jsonify([contact.to_dict(rules=('-company', '-todo_lists', '-manager')) for contact in contacts])
+        return jsonify([contact.serialize() for contact in contacts])
     except Exception as e:
-        # Handle general exceptions
         return jsonify({'message': str(e)}), 500
 
     
@@ -218,13 +238,16 @@ def get_todos(list_id):
 
 @app.route('/lists-for-contact/<int:contact_id>', methods=['GET'])
 def get_lists_for_contact(contact_id):
-    try:
-        todo_lists = ToDoList.query.filter_by(contact_id=contact_id).all()
-        lists_data = [list_.to_dict() for list_ in todo_lists]  # Assuming a to_dict method is available
-        return jsonify(lists_data), 200
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
+    # Query to get all ToDoList items for the given contact_id
+    todo_lists = ToDoList.query.filter_by(contact_id=contact_id).all()
     
+    # Construct an array of dictionaries with just the list 'id' and 'title'
+    lists_data = [{'id': todo_list.id, 'title': todo_list.title} for todo_list in todo_lists]
+
+    # Return the array of list titles as a JSON response
+    return jsonify(lists_data), 200
+
+
 @app.route('/companies/<int:company_id>', methods=['PUT', 'PATCH'])
 def update_company(company_id):
     try:
@@ -282,3 +305,4 @@ def add_company():
   
 if __name__ == '__main__':
     app.run(debug=True)  
+    

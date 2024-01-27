@@ -11,7 +11,6 @@ const ManageContacts = () => {
     const navigate = useNavigate();
     const [selectedCompanyId,setSelectedCompanyId] = useState('')
 
-  // Retrieve companies and contacts from Redux store
   const companies = useSelector(state=>state.companies.companies)
   const contacts = useSelector((state) => state.contacts.contacts);
 
@@ -31,7 +30,7 @@ const ManageContacts = () => {
     () => [
       {
         Header: 'ID',
-        accessor: 'id', // accessor is the "key" in the data
+        accessor: 'id', 
       },
       {
         Header: 'Name',
@@ -45,7 +44,6 @@ const ManageContacts = () => {
         Header:'Current Status',
         accessor:'status'
       },
-      // Add more columns as needed
     ],
     []
   );
@@ -57,9 +55,12 @@ const ManageContacts = () => {
   const handleBack = ()=>{
     navigate('/')
   }
+
+  const handleAddContactClick = ()=>{
+    navigate('/add-contact')
+  }
   
 
-  // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
     getTableBodyProps,
@@ -68,10 +69,10 @@ const ManageContacts = () => {
     prepareRow,
   } = useTable({ columns, data: contacts });
 
-  // Render the table UI using react-table's UI construction methods
   return (
     <div className="ManageContacts-container">
       <button onClick={handleBack}>Back to Home</button>
+      <button onClick={handleAddContactClick}>Add New Contact</button>
       <select value={selectedCompanyId} onChange={handleCompanyChange}>
         <option value="">Select a Company</option>
         {companies.map((company) => (

@@ -81,7 +81,7 @@ def seed_database():
         clear_data()
 
         # Add user Sam or get existing user
-        sam = db.session.query(User).get(1)
+        sam = db.session.get(User, 1)
         if not sam:
             sam = add_user('sam', 'sam@example.com', 'hashed_password')
         
@@ -99,7 +99,8 @@ def seed_database():
         # Associate the general tag with each todo
         todos = ToDo.query.all()
         for todo in todos:
-            todo.tags.append(general_tag)
+            if general_tag not in todo.tags:
+                todo.tags.append(general_tag)
 
         # Populate the tags table with additional tags
         populate_tags()

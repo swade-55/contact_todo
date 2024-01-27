@@ -1,22 +1,24 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchListsForContact } from './slices/listsSlice';
+// ListsDisplay.js
+import React from 'react';
+import { useSelector } from 'react-redux';
+import TodoItem from './TodoItem';
+
+const todoContainerStyle = {
+  padding: '20px',
+};
 
 const ListsDisplay = ({ selectedContactId }) => {
-  const dispatch = useDispatch();
-  const lists = useSelector((state) => state.lists.listsByContact[selectedContactId] || []);
-
-  useEffect(() => {
-    if (selectedContactId) {
-      dispatch(fetchListsForContact(selectedContactId));
-    }
-  }, [selectedContactId, dispatch]);
+  const contacts = useSelector((state) => state.contacts.contacts);
+  const selectedContact = contacts.find(contact => contact.id === selectedContactId);
+  const lists = selectedContact ? selectedContact.lists : [];
 
   return (
-    <div>
-      {lists.map((list) => (
-        <div key={list.id}>{list.title}</div>
-      ))}
+    <div style={todoContainerStyle}>
+      {lists.map((list) =>
+        list.todos.map((todo) => (
+          <TodoItem key={todo.id} todo={todo} />
+        ))
+      )}
     </div>
   );
 };

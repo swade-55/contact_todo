@@ -22,6 +22,14 @@ class Company(db.Model, SerializerMixin):
     #Relationships
     contacts = db.relationship('Contact',backref='company',lazy='dynamic')
     
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "manager_id": self.manager_id
+            # Do not serialize contacts here to avoid recursion
+        }
+    
     def __repr__(self):
         return f'<Company {self.name}>'
 
@@ -38,7 +46,13 @@ class User(db.Model,SerializerMixin):
     managed_contacts = db.relationship('Contact',backref='manager',lazy=True)
     
     
-    
+    def serialize(self):
+        # Serialize only necessary fields
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email
+        }
     def __repr__(self):
         return '<User %r>' % self.username
     
@@ -53,7 +67,19 @@ class Contact(db.Model, SerializerMixin):
     manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
     todo_lists = db.relationship('ToDoList',backref='contact',lazy=True)
     
-    serialize_rules = ('-manager.managed_contacts','-todo_lists.contact')
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "status": self.status,
+            "company_id": self.company_id,
+            "manager_id": self.manager_id,
+            "last_contact_date": self.last_contact_date.strftime("%Y-%m-%d %H:%M:%S") if self.last_contact_date else None,
+            # Serialize only the ID of the related ToDoList to avoid recursion
+            "todo_lists": [list.id for list in self.todo_lists]
+        }
+        
+    
     
     def __repr__(self):
         return f'<Contact {self.name}>'
@@ -66,7 +92,13 @@ class ToDoList(db.Model,SerializerMixin):
     contact_id = db.Column(db.Integer,db.ForeignKey('contact.id'),nullable=False)
     todos = db.relationship('ToDo', backref='list', lazy=True)
     
-    serialize_rules = ('-todos.list','-contact.todo_lists')
+    def serialize(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "contact_id": self.contact_id
+            # Do not serialize todos here to avoid recursion
+        }
     
     def __repr__(self):
         return '<List %r>' % self.title
@@ -84,7 +116,15 @@ class ToDo(db.Model,SerializerMixin):
     tags = db.relationship('Tag',secondary=todo_tags,lazy='subquery',backref=db.backref('todos',lazy=True))
     
     
-    serialize_rules = ('-list','-tags.todos')
+    def serialize(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "completed": self.completed,
+            "date_created": self.date_created.strftime("%Y-%m-%d %H:%M:%S"),
+            "due_date": self.due_date.strftime("%Y-%m-%d %H:%M:%S") if self.due_date else None,
+        }
     
     def __repr__(self):
         return '<ToDo %r>' % self.description
@@ -94,7 +134,19 @@ class Tag(db.Model,SerializerMixin):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(80),nullable=False,unique=True)
     
-    serialize_rules = ('-todos',)
+    def serialize(self):
+        # Serialize necessary fields
+        return {
+            "id": self.id,
+            "name": self.name
+        }
     
     def __repr__(self):
         return '<Tag %r>' % self.name
+    
+    
+    #create for contacts
+    #create for users/managers and display as another column in the contacts component
+    #update state for full crud for companies 
+    
+    

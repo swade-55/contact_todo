@@ -3,11 +3,10 @@ import { useSelector } from 'react-redux';
 import {useNavigate} from 'react-router-dom'
 import { useTable } from 'react-table'; // Import useTable from react-table
 import '../styles/ManageCompanies.css';
-import { updateCompany } from './slices/companiesSlice';
+import { updateCompany,fetchCompanies } from './slices/companiesSlice';
 import {useDispatch} from 'react-redux'
 
 const ManageCompanies = () => {
-  // Retrieve companies from Redux store
   const companies = useSelector((state) => state.companies.companies);
   const navigate = useNavigate();
   const [editRowId, setEditRowId] = useState(null)
@@ -22,6 +21,9 @@ const ManageCompanies = () => {
   const handleAddCompanyClick = ()=>{
     navigate('/add-company')
   }
+  const handleAddUserClick = ()=>{
+    navigate('/add-user')
+  }
 
   const handleEditClick = (company,e)=>{
     e.preventDefault()
@@ -34,9 +36,10 @@ const ManageCompanies = () => {
   }
 
   const handleSaveClick = () => {
-    dispatch(updateCompany(editFormData)) // Dispatch the action using Redux's dispatch
+    dispatch(updateCompany(editFormData)) 
       .then(() => {
         // Handle success - maybe refresh the list or show a success message
+        dispatch(fetchCompanies())
       })
       .catch((error) => {
         // Handle error - show an error message
@@ -49,7 +52,6 @@ const ManageCompanies = () => {
 
   }
 
-  // Define columns for react-table
 
   
   const columns = React.useMemo(
@@ -91,7 +93,6 @@ const ManageCompanies = () => {
       [editRowId, editFormData]
       );
       
-      // Use the state and functions returned from useTable to build your UI
       const {
         getTableProps,
         getTableBodyProps,
@@ -101,10 +102,10 @@ const ManageCompanies = () => {
       } = useTable({ columns, data: companies });
 
 
-      // Render the table UI using react-table's UI construction methods
       return (
         <div className="container">
       <button onClick={handleAddCompanyClick}>Add New Company</button>
+      <button onClick={handleAddUserClick}>Add New User</button>
       <button onClick={handleBack}>Back to Home</button>
       <table {...getTableProps()} className="table">
         <thead>

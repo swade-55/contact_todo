@@ -1,16 +1,18 @@
 // NewCompanyForm.jsx
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
-import { addCompany } from './slices/companiesSlice'; // Import your addCompany action
+import { addCompany,fetchCompanies } from './slices/companiesSlice'; 
 
 const NewCompanyForm = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const initialValues = {
     name: '',
-    manager_id: '', // Adjust as per your requirement
+    manager_id: '', 
   };
 
   const validationSchema = Yup.object().shape({
@@ -18,19 +20,26 @@ const NewCompanyForm = () => {
     manager_id: Yup.number().required('Manager ID is required').positive().integer(),
   });
 
-  const onSubmit = (values, { setSubmitting }) => {
+  const onSubmit = (values) => {
     dispatch(addCompany(values))
-      .then(() => {
-        // Handle success - maybe redirect to company list or show a success message
-      })
-      .catch((error) => {
-        // Handle error - show an error message
-      })
-      .finally(() => setSubmitting(false));
+      // .then(() => {
+      //   // Handle success - maybe redirect to company list or show a success message
+      //   dispatch(fetchCompanies())
+      // })
+      // .catch((error) => {
+      //   // Handle error - show an error message
+      // })
+      // .finally(() => setSubmitting(false));
+      dispatch(fetchCompanies())
   };
+
+  const handleBack=()=>{
+    navigate('/manage-companies')
+  }
 
   return (
     <div>
+      <button onClick={handleBack}>Back to Manage Companies</button>
       <h1>Add New Company</h1>
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {({ isSubmitting }) => (

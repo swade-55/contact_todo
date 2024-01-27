@@ -3,24 +3,21 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const initialState = {
   companies: [],
-  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: 'idle', 
   error: null,
 };
 
 // Async thunk for fetching companies
 export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async (userId) => {
     const url = `http://localhost:5000/companies/${userId}`; // Full URL to your Flask API
-    console.log(`Fetching companies for user id: ${userId} from ${url}`);
     const response = await fetch(url);
   
     if (!response.ok) {
-      // This will handle any non-200 HTTP status codes
       console.error(`HTTP error! status: ${response.status}`);
       throw new Error('Could not fetch companies');
     }
   
     const data = await response.json();
-    console.log('Fetched companies:', data);
     return data;
   });
 
@@ -77,11 +74,27 @@ export const companiesSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchCompanies.fulfilled, (state, action) => {
-        console.log('Fetching companies: Succeeded', action.payload);
         state.status = 'succeeded';
         state.companies = action.payload;
       })
       .addCase(fetchCompanies.rejected, (state, action) => {
+        console.error('Fetching companies: Failed', action.error.message);
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(addCompany.pending, (state) => {
+        console.log('Fetching companies: Loading');
+        state.status = 'loading';
+      })
+      .addCase(addCompany.fulfilled, (state, action) => {
+        //update state with the new company in the end
+        state.status = 'succeeded';
+        state.companies = action.payload;
+        //action.payload might be one company
+        //include the added company to the end of the companies array
+        console.log(action.payload)
+      })
+      .addCase(addCompany.rejected, (state, action) => {
         console.error('Fetching companies: Failed', action.error.message);
         state.status = 'failed';
         state.error = action.error.message;

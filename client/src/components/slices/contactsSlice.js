@@ -7,13 +7,29 @@ const initialState = {
   error: null,
 };
 
-// Async thunk for fetching contacts and their lists
+export const addContact = createAsyncThunk('contacts/addContact',async(contactData,{rejectWithValue})=>{
+  try{
+    const response = await fetch('http://localhost:5000/contacts',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+      },
+      body:JSON.stringify(contactData)
+    });
+    if (!response.ok){
+      throw new Error('Network response was not ok')
+    }
+    return response.json();
+  } catch (error){
+    return rejectWithValue(error.message)
+  }
+});
+
 export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (companyId) => {
-  const url = `http://localhost:5000/company-contacts-lists/${companyId}`; // Update the URL to match your Flask route
+  const url = `http://localhost:5000/company-contacts-lists/${companyId}`; 
   const response = await fetch(url);
   
   if (!response.ok) {
-    // If the response is not ok, throw an error
     const errorData = await response.text();
     throw new Error(errorData || 'Could not fetch contacts');
   }
@@ -22,25 +38,18 @@ export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (c
   return data;
 });
 
-export const fetchAllContacts = createAsyncThunk('contacts/fetchAllContacts', async (companyId) => {
-  const url = `http://localhost:5000/contacts-lists`; // Update the URL to match your Flask route
-  const response = await fetch(url);
-  
+export const fetchAllContacts = createAsyncThunk('contacts/fetchAllContacts', async () => {
+  const response = await fetch('http://localhost:5000/contacts-lists');
   if (!response.ok) {
-    // If the response is not ok, throw an error
-    const errorData = await response.text();
-    throw new Error(errorData || 'Could not fetch contacts');
+    throw new Error('Could not fetch contacts');
   }
-  
-  const data = await response.json();
-  return data;
+  return await response.json();
 });
 
 export const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
-    // You can add reducers for any synchronous actions here
   },
   extraReducers: (builder) => {
     builder
@@ -49,7 +58,6 @@ export const contactsSlice = createSlice({
       })
       .addCase(fetchContacts.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        // The payload should now be an array of contacts, each with their own lists
         state.contacts = action.payload;
       })
       .addCase(fetchContacts.rejected, (state, action) => {
@@ -61,13 +69,24 @@ export const contactsSlice = createSlice({
       })
       .addCase(fetchAllContacts.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        // The payload should now be an array of contacts, each with their own lists
+        // Set the contacts to the fetched data
         state.contacts = action.payload;
       })
       .addCase(fetchAllContacts.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
-      });
+      })
+      .addCase(addContact.pending,(state)=>{
+        state.status='loading';
+      })
+      .addCase(addContact.fulfilled,(state,action)=>{
+        state.status='succeeded';
+        state.contacts.push(action.payload)
+      })
+      .addCase(addContact.rejected,(state,action)=>{
+        state.status='failed';
+        state.error=action.error.message;
+      })
   },
 });
 

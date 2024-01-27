@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-
+// Async thunk
 export const fetchListsForContact = createAsyncThunk(
   'lists/fetchListsForContact',
   async (contactId, { rejectWithValue }) => {
@@ -9,8 +9,9 @@ export const fetchListsForContact = createAsyncThunk(
       if (!response.ok) {
         throw new Error('Failed to fetch lists');
       }
-      const lists = await response.json();
-      return lists;
+      const data = await response.json();
+      // Directly return the data which should be an array
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -18,68 +19,31 @@ export const fetchListsForContact = createAsyncThunk(
 );
 
 
-export const fetchTodosForList = createAsyncThunk(
-  'todos/fetchTodosForList',
-  async (listId, thunkAPI) => {
-    const response = await fetch(`/todos/${listId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch todos');
-    }
-    const todos = await response.json();
-    return todos;
-  }
-);
-
-export const fetchTodosForContact = createAsyncThunk(
-  'lists/fetchTodosForContact',
-  async (contactId, thunkAPI) => {
-    const response = await fetch(`/todos-for-contact/${contactId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch todos for contact');
-    }
-    const todos = await response.json();
-    return todos;
-  }
-);
-
 export const listsSlice = createSlice({
   name: 'lists',
   initialState: {
-    lists: [],
+    listsByContact: {},
     todos: {},
     status: 'idle',
     error: null,
   },
   reducers: {
-    // Reducers if needed
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchListsForContact.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchListsForContact.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.lists = action.payload;
-      })
       .addCase(fetchListsForContact.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message;
+        state.error = action.payload?.message || 'An unknown error occurred';
       })
-      .addCase(fetchTodosForList.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(fetchTodosForList.fulfilled, (state, action) => {
+      .addCase(fetchListsForContact.fulfilled, (state, action) => {
+        // Log the action payload
+        console.log('Fulfilled action payload:', action.payload); 
+        // Update state with the new array of lists for the contactId
+        state.listsByContact[action.meta.arg] = action.payload;
         state.status = 'succeeded';
-        // Assuming action.meta.arg is the list ID
-        state.todos[action.meta.arg] = action.payload;
-      })
-      .addCase(fetchTodosForList.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
-      .addCase(fetchTodosForContact.fulfilled, (state, action) => {
-        state.todosByContact[action.meta.arg] = action.payload;
       });
   },
 });
