@@ -9,7 +9,11 @@ const initialState = {
 
 // Async thunk for fetching companies
 export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async (userId) => {
-    const url = `http://localhost:5000/companies/${userId}`; // Full URL to your Flask API
+
+  if (userId === undefined) {
+    userId = '1'; 
+}
+    const url = `http://localhost:5000/companies/${userId}`; 
     const response = await fetch(url);
   
     if (!response.ok) {
@@ -40,11 +44,28 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
       return rejectWithValue(error.message);
     }
   });
+
+  export const deleteCompany = createAsyncThunk('companies/deleteCompany', async (companyId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`http://localhost:5000/companies/${companyId}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      return companyId;  // Return the ID of the deleted company
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  });
+  
   
   export const updateCompany = createAsyncThunk('companies/updateCompany', async (companyData, { rejectWithValue }) => {
     try {
       const response = await fetch(`http://localhost:5000/companies/${companyData.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -65,7 +86,7 @@ export const companiesSlice = createSlice({
   name: 'companies',
   initialState,
   reducers: {
-    // Reducers for any synchronous actions
+    
   },
   extraReducers: (builder) => {
     builder
@@ -87,16 +108,32 @@ export const companiesSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(addCompany.fulfilled, (state, action) => {
-        //update state with the new company in the end
         state.status = 'succeeded';
-        state.companies = action.payload;
-        //action.payload might be one company
-        //include the added company to the end of the companies array
-        console.log(action.payload)
+        // Append the new company to the existing array instead of replacing it
+        state.companies.push(action.payload);
       })
       .addCase(addCompany.rejected, (state, action) => {
         console.error('Fetching companies: Failed', action.error.message);
         state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(deleteCompany.fulfilled, (state, action) => {
+        state.companies = state.companies.filter(company => company.id !== action.payload);
+      })
+      .addCase(updateCompany.fulfilled, (state, action) => {
+        const index = state.companies.findIndex(company => company.id === action.payload.id);
+        if (index !== -1) {
+          // Update the company in the array
+          state.companies[index] = action.payload;
+        } else {
+          // This case handles if for some reason the company is not found; you might decide to add it instead
+          console.warn("Updated company not found in the array");
+          // Optionally add the company to the array
+          // state.companies.push(action.payload);
+        }
+      })
+      .addCase(updateCompany.rejected, (state, action) => {
+        console.error('Updating company failed', action.error.message);
         state.error = action.error.message;
       });
   },

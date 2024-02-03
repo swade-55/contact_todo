@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import { useSelector } from 'react-redux';
 import {useNavigate} from 'react-router-dom'
-import { useTable } from 'react-table'; // Import useTable from react-table
+import { useTable } from 'react-table'; 
 import '../styles/ManageCompanies.css';
-import { updateCompany,fetchCompanies } from './slices/companiesSlice';
+import { updateCompany,fetchCompanies,deleteCompany } from './slices/companiesSlice';
 import {useDispatch} from 'react-redux'
 
 const ManageCompanies = () => {
@@ -25,24 +25,20 @@ const ManageCompanies = () => {
     navigate('/add-user')
   }
 
-  const handleEditClick = (company,e)=>{
-    e.preventDefault()
-    setEditRowId(company.id)
-    setEditFormData({name:company.name,id:company.id})
-  }
+  const handleEditClick = (company, e) => {
+    e.preventDefault();
+    setEditRowId(company.id);
+    setEditFormData({ name: company.name, id: company.id });
+  };
 
   const handleCancelClick = ()=>{
     setEditRowId(null)
   }
 
   const handleSaveClick = () => {
-    dispatch(updateCompany(editFormData)) 
-      .then(() => {
-        // Handle success - maybe refresh the list or show a success message
-        dispatch(fetchCompanies())
-      })
+    dispatch(updateCompany(editFormData))
       .catch((error) => {
-        // Handle error - show an error message
+        console.error('Update failed', error);
       });
     setEditRowId(null);
   };
@@ -51,6 +47,19 @@ const ManageCompanies = () => {
     setEditFormData({...editFormData, [e.target.name]:e.target.value})
 
   }
+
+  const handleDeleteClick = (companyId) => {
+    if (window.confirm('Are you sure you want to delete this company?')) {
+      dispatch(deleteCompany(companyId))
+        .then(() => {
+          dispatch(fetchCompanies());
+        })
+        .catch((error) => {
+          console.error('Delete failed', error);
+        });
+    }
+  };
+ 
 
 
   
@@ -61,21 +70,27 @@ const ManageCompanies = () => {
         accessor: 'id',
       },
       {
+        Header: 'Manager ID',
+        accessor: 'manager_id', 
+      },
+      {
         Header: 'Name',
         accessor: 'name',
         Cell: ({ row }) => {
-          return editRowId === row.original.id ? (
-            <input
-            type="text"
-            name="name"
-            value={editFormData.name}
-            onChange={handleFormChange}
-            />
-            ) : (
-              <span>{row.original.name}</span>
-              );
-            },
-          },
+          if (editRowId === row.original.id) {
+            return (
+              <input
+                type="text"
+                name="name"
+                value={editFormData.name}
+                onChange={handleFormChange}
+              />
+            );
+          } else {
+            return <span>{row.original.name}</span>;
+          }
+        },
+      },
           {
             Header: 'Actions',
             Cell: ({ row }) => {
@@ -83,6 +98,7 @@ const ManageCompanies = () => {
                 <div>
               <button onClick={handleSaveClick}>Save</button>
               <button onClick={handleCancelClick}>Cancel</button>
+              <button onClick={() => handleDeleteClick(row.original.id)}>Delete</button>
             </div>
           ) : (
             <button onClick={(e) => handleEditClick(row.original, e)}>Edit</button>
@@ -99,7 +115,9 @@ const ManageCompanies = () => {
         headerGroups,
         rows,
         prepareRow,
-      } = useTable({ columns, data: companies });
+      } = useTable({ columns, data: Array.isArray(companies) ? companies : [companies] });
+
+      console.log(companies);
 
 
       return (

@@ -20,18 +20,23 @@ const NewCompanyForm = () => {
     manager_id: Yup.number().required('Manager ID is required').positive().integer(),
   });
 
-  const onSubmit = (values) => {
+  const onSubmit = (values, { setSubmitting }) => {
     dispatch(addCompany(values))
-      // .then(() => {
-      //   // Handle success - maybe redirect to company list or show a success message
-      //   dispatch(fetchCompanies())
-      // })
-      // .catch((error) => {
-      //   // Handle error - show an error message
-      // })
-      // .finally(() => setSubmitting(false));
-      dispatch(fetchCompanies())
+      .unwrap()
+      .then((newCompany) => {
+        // Handle success - maybe redirect to company list or show a success message
+        // No need to fetch all companies if the state is already updated
+        // navigate('/company-list'); // Redirect to the list of companies or wherever appropriate
+      })
+      .catch((error) => {
+        // Handle error - show an error message
+        console.error('Failed to add company:', error);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
+
 
   const handleBack=()=>{
     navigate('/manage-companies')

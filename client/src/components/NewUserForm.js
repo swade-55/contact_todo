@@ -23,7 +23,7 @@ const NewUserForm = () => {
 
   const onSubmit = (values, { setSubmitting, resetForm, setErrors }) => {
     // Construct the API endpoint
-    const apiUrl = 'http://localhost:5000/users'; // Change this URL to your actual API endpoint
+    const apiUrl = 'http://localhost:5000/users'; 
 
     // Use Fetch API to submit form data
     fetch(apiUrl, {

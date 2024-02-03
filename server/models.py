@@ -5,12 +5,27 @@ from sqlalchemy_serializer import SerializerMixin
 
 db = SQLAlchemy()
 
-todo_tags = db.Table(
-    'todo_tags',
-    db.Column('todo_id',db.Integer,db.ForeignKey('todo.id'),primary_key=True),
-    db.Column('tag_id',db.Integer,db.ForeignKey('tag.id'),primary_key=True)
+
+class ToDoTag(db.Model, SerializerMixin):
+    __tablename__ = 'todo_tag'
     
-)
+    todo_id = db.Column(db.Integer, db.ForeignKey('todo.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+    assigned_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    todo = db.relationship('ToDo', back_populates="todo_tags")
+    tag = db.relationship('Tag', back_populates="todo_tags")
+    
+    def serialize(self):
+        return {
+            "todo_id": self.todo_id,
+            "tag_id": self.tag_id,
+            "assigned_date": self.assigned_date.strftime("%Y-%m-%d %H:%M:%S") if self.assigned_date else None
+        }
+        
+    def __repr__(self):
+        return f'<ToDoTag todo_id={self.todo_id}, tag_id={self.tag_id}, assigned_date={self.assigned_date}>'
+    
 
 class Company(db.Model, SerializerMixin):
     __tablename__ = 'company'
@@ -20,14 +35,13 @@ class Company(db.Model, SerializerMixin):
     manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
     
     #Relationships
-    contacts = db.relationship('Contact',backref='company',lazy='dynamic')
+    manager = db.relationship('User', back_populates="managed_companies")
+    contacts = db.relationship('Contact', back_populates="company")
     
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
-            "manager_id": self.manager_id
-            # Do not serialize contacts here to avoid recursion
         }
     
     def __repr__(self):
@@ -42,12 +56,11 @@ class User(db.Model,SerializerMixin):
     password_hash = db.Column(db.String(128))
     
     #Relationships
-    managed_companies = db.relationship('Company',backref='manager',lazy=True)
-    managed_contacts = db.relationship('Contact',backref='manager',lazy=True)
+    managed_companies = db.relationship('Company', back_populates="manager")
+    managed_contacts = db.relationship('Contact', back_populates="manager")
     
     
     def serialize(self):
-        # Serialize only necessary fields
         return {
             "id": self.id,
             "username": self.username,
@@ -67,6 +80,9 @@ class Contact(db.Model, SerializerMixin):
     manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
     todo_lists = db.relationship('ToDoList',backref='contact',lazy=True)
     
+    company = db.relationship('Company', back_populates="contacts")
+    manager = db.relationship('User', back_populates="managed_contacts")
+    
     def serialize(self):
         return {
             "id": self.id,
@@ -75,7 +91,6 @@ class Contact(db.Model, SerializerMixin):
             "company_id": self.company_id,
             "manager_id": self.manager_id,
             "last_contact_date": self.last_contact_date.strftime("%Y-%m-%d %H:%M:%S") if self.last_contact_date else None,
-            # Serialize only the ID of the related ToDoList to avoid recursion
             "todo_lists": [list.id for list in self.todo_lists]
         }
         
@@ -93,11 +108,12 @@ class ToDoList(db.Model,SerializerMixin):
     todos = db.relationship('ToDo', backref='list', lazy=True)
     
     def serialize(self):
+        todos_data = [todo.serialize() for todo in self.todos]
         return {
             "id": self.id,
             "title": self.title,
-            "contact_id": self.contact_id
-            # Do not serialize todos here to avoid recursion
+            "contact_id": self.contact_id,
+            "todos": todos_data  # Serialize todos here
         }
     
     def __repr__(self):
@@ -113,7 +129,9 @@ class ToDo(db.Model,SerializerMixin):
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     due_date = db.Column(db.DateTime, nullable=True) 
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False)
-    tags = db.relationship('Tag',secondary=todo_tags,lazy='subquery',backref=db.backref('todos',lazy=True))
+    
+    tags = db.relationship('Tag', secondary='todo_tag', back_populates="todos")
+    todo_tags = db.relationship('ToDoTag', back_populates="todo")
     
     
     def serialize(self):
@@ -122,8 +140,9 @@ class ToDo(db.Model,SerializerMixin):
             "title": self.title,
             "description": self.description,
             "completed": self.completed,
-            "date_created": self.date_created.strftime("%Y-%m-%d %H:%M:%S"),
+            "date_created": self.date_created.strftime("%Y-%m-%d %H:%M:%S") if self.date_created else None,
             "due_date": self.due_date.strftime("%Y-%m-%d %H:%M:%S") if self.due_date else None,
+            "list_id": self.list_id
         }
     
     def __repr__(self):
@@ -134,8 +153,10 @@ class Tag(db.Model,SerializerMixin):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(80),nullable=False,unique=True)
     
+    todos = db.relationship('ToDo', secondary='todo_tag', back_populates="tags")
+    todo_tags = db.relationship('ToDoTag', back_populates="tag")
+    
     def serialize(self):
-        # Serialize necessary fields
         return {
             "id": self.id,
             "name": self.name
@@ -145,8 +166,11 @@ class Tag(db.Model,SerializerMixin):
         return '<Tag %r>' % self.name
     
     
-    #create for contacts
-    #create for users/managers and display as another column in the contacts component
+    #create for contacts checked
+    #create for users/managers and display as another column in the contacts component checked 
     #update state for full crud for companies 
+    #create for the todo_tags table
+    # think about appropriate naming convention for todo tag user input attribute
+    # create front end for naming convention
     
     

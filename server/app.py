@@ -28,7 +28,7 @@ def create_user():
 @app.route('/companies/<int:user_id>', methods=['GET'])
 def get_companies(user_id):
     companies = Company.query.filter_by(manager_id=user_id).all()
-    companies_data = [{'id': c.id, 'name': c.name} for c in companies]  # Manual serialization
+    companies_data = [{'id': c.id, 'name': c.name, 'manager_id': c.manager_id} for c in companies]
     return jsonify(companies_data)
 
 
@@ -54,7 +54,7 @@ def add_contact():
     )
     db.session.add(new_contact)
     db.session.commit()
-    return jsonify(new_contact.to_dict()),201
+    return jsonify(new_contact.serialize()),201
 
 
 @app.route('/todos', methods=['POST'])
@@ -95,41 +95,74 @@ def update_contact(contact_id):
     db.session.commit()
     return jsonify(contact.to_dict()), 200
         
+# @app.route('/company-contacts-lists/<int:company_id>', methods=['GET'])
+# def get_company_contacts_and_lists(company_id):
+#     try:
+#         # Retrieve the contacts for the company
+#         contacts = Contact.query.filter_by(company_id=company_id).all()
+#         if not contacts:
+#             return jsonify({'message': 'No contacts found for this company'}), 404
+        
+#         # For each contact, retrieve the lists and serialize the data
+#         contacts_data = []
+#         for contact in contacts:
+#             # Serialize the contact data
+#             contact_data = contact.to_dict(rules=('-company', '-todo_lists', '-manager'))
+            
+#             # Retrieve, serialize the lists for this contact, and include todos
+#             lists_data = []
+#             todo_lists = ToDoList.query.filter_by(contact_id=contact.id).all()
+#             for todo_list in todo_lists:
+#                 # Serialize list data
+#                 list_data = todo_list.to_dict(rules=('-contact', '-todos'))
+#                 # Retrieve and serialize todos for this list
+#                 todos = ToDo.query.filter_by(list_id=todo_list.id).all()
+#                 list_data['todos'] = [todo.to_dict() for todo in todos]
+#                 lists_data.append(list_data)
+            
+#             # Add the lists data with todos to the contact's dictionary
+#             contact_data['lists'] = lists_data
+            
+#             # Append the contact data to the contacts_data list
+#             contacts_data.append(contact_data)
+        
+#         # Return the combined data
+#         return jsonify(contacts_data)
+#     except Exception as e:
+#         # Handle general exceptions
+#         return jsonify({'message': str(e)}), 500
+    
+    
 @app.route('/company-contacts-lists/<int:company_id>', methods=['GET'])
 def get_company_contacts_and_lists(company_id):
     try:
-        # Retrieve the contacts for the company
+        print(f"Fetching contacts for company ID: {company_id}")
         contacts = Contact.query.filter_by(company_id=company_id).all()
         if not contacts:
+            print("No contacts found for this company.")
             return jsonify({'message': 'No contacts found for this company'}), 404
-        
-        # For each contact, retrieve the lists and serialize the data
+
         contacts_data = []
         for contact in contacts:
-            # Serialize the contact data
-            contact_data = contact.to_dict(rules=('-company', '-todo_lists', '-manager'))
-            
-            # Retrieve, serialize the lists for this contact, and include todos
+            print(f"Processing contact ID: {contact.id}")
+            contact_data = contact.serialize()  # Using serialize method
+
             lists_data = []
             todo_lists = ToDoList.query.filter_by(contact_id=contact.id).all()
             for todo_list in todo_lists:
-                # Serialize list data
-                list_data = todo_list.to_dict(rules=('-contact', '-todos'))
-                # Retrieve and serialize todos for this list
-                todos = ToDo.query.filter_by(list_id=todo_list.id).all()
-                list_data['todos'] = [todo.to_dict() for todo in todos]
+                print(f"Processing todo list ID: {todo_list.id}")
+                list_data = todo_list.serialize()  # Using serialize method
+
                 lists_data.append(list_data)
-            
-            # Add the lists data with todos to the contact's dictionary
+
             contact_data['lists'] = lists_data
-            
-            # Append the contact data to the contacts_data list
             contacts_data.append(contact_data)
-        
-        # Return the combined data
+
+
+        print("Data retrieval successful.")
         return jsonify(contacts_data)
     except Exception as e:
-        # Handle general exceptions
+        print(f"An error occurred: {e}")
         return jsonify({'message': str(e)}), 500
     
 @app.route('/contact-lists-todos/<int:contact_id>', methods=['GET'])
@@ -187,38 +220,56 @@ def get_all_lists_and_todos():
         return jsonify({'message': str(e)}), 500
     
     
+# @app.route('/contacts-lists', methods=['GET'])
+# def get_all_contacts_and_lists():
+#     try:
+#         # Retrieve the contacts for the company
+#         contacts = Contact.query.all()
+#         if not contacts:
+#             return jsonify({'message': 'No contacts found for this company'}), 404
+        
+#         # For each contact, retrieve the lists and serialize the data
+#         contacts_data = []
+#         for contact in contacts:
+#             # Serialize the contact data
+#             contact_data = contact.to_dict(rules=('-company', '-todo_lists', '-manager'))
+            
+#             # Retrieve, serialize the lists for this contact, and include todos
+#             lists_data = []
+#             todo_lists = ToDoList.query.filter_by(contact_id=contact.id).all()
+#             for todo_list in todo_lists:
+#                 # Serialize list data
+#                 list_data = todo_list.to_dict(rules=('-contact', '-todos'))
+#                 # Retrieve and serialize todos for this list
+#                 todos = ToDo.query.filter_by(list_id=todo_list.id).all()
+#                 list_data['todos'] = [todo.to_dict() for todo in todos]
+#                 lists_data.append(list_data)
+            
+#             # Add the lists data with todos to the contact's dictionary
+#             contact_data['lists'] = lists_data
+            
+#             # Append the contact data to the contacts_data list
+#             contacts_data.append(contact_data)
+    
+#         # Return the combined data
+#         return jsonify(contacts_data)
+#     except Exception as e:
+#         # Handle general exceptions
+#         return jsonify({'message': str(e)}), 500
+    
+    
 @app.route('/contacts-lists', methods=['GET'])
 def get_all_contacts_and_lists():
     try:
-        # Retrieve the contacts for the company
+        # Retrieve all contacts
         contacts = Contact.query.all()
         if not contacts:
-            return jsonify({'message': 'No contacts found for this company'}), 404
+            return jsonify({'message': 'No contacts found'}), 404
         
-        # For each contact, retrieve the lists and serialize the data
-        contacts_data = []
-        for contact in contacts:
-            # Serialize the contact data
-            contact_data = contact.to_dict(rules=('-company', '-todo_lists', '-manager'))
-            
-            # Retrieve, serialize the lists for this contact, and include todos
-            lists_data = []
-            todo_lists = ToDoList.query.filter_by(contact_id=contact.id).all()
-            for todo_list in todo_lists:
-                # Serialize list data
-                list_data = todo_list.to_dict(rules=('-contact', '-todos'))
-                # Retrieve and serialize todos for this list
-                todos = ToDo.query.filter_by(list_id=todo_list.id).all()
-                list_data['todos'] = [todo.to_dict() for todo in todos]
-                lists_data.append(list_data)
-            
-            # Add the lists data with todos to the contact's dictionary
-            contact_data['lists'] = lists_data
-            
-            # Append the contact data to the contacts_data list
-            contacts_data.append(contact_data)
+        # Serialize each contact using the custom serialize method
+        contacts_data = [contact.serialize() for contact in contacts]
     
-        # Return the combined data
+        # Return the serialized data
         return jsonify(contacts_data)
     except Exception as e:
         # Handle general exceptions
@@ -248,7 +299,7 @@ def get_lists_for_contact(contact_id):
     return jsonify(lists_data), 200
 
 
-@app.route('/companies/<int:company_id>', methods=['PUT', 'PATCH'])
+@app.route('/companies/<int:company_id>', methods=['PATCH'])
 def update_company(company_id):
     try:
         # Fetch the company based on company_id
@@ -267,7 +318,7 @@ def update_company(company_id):
             company.manager_id = data['manager_id']
         
         db.session.commit()
-        return jsonify(company.to_dict()), 200
+        return jsonify(company.serialize()), 200
     except Exception as e:
         # Handle exceptions and errors
         return jsonify({'message': str(e)}), 500
@@ -297,10 +348,20 @@ def add_company():
         db.session.add(new_company)
         db.session.commit()
 
-        return jsonify(new_company.to_dict()), 201
+        return jsonify(new_company.serialize()), 201
     except Exception as e:
         # Handle exceptions and errors
         return jsonify({'message': str(e)}), 500
+    
+@app.route('/companies/<int:company_id>', methods=['DELETE'])
+def delete_company(company_id):
+    company = Company.query.get(company_id)
+    if company:
+        db.session.delete(company)
+        db.session.commit()
+        return jsonify({"message": "Company deleted"}), 200
+    else:
+        return jsonify({"message": "Company not found"}), 404
 
   
 if __name__ == '__main__':
