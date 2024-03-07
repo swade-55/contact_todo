@@ -8,7 +8,10 @@ import ManageToDo from './ManageToDo';
 import {useDispatch} from 'react-redux'
 import NewCompanyForm from './NewCompanyForm'
 import NewContactForm from './NewContactForm'
+import NewTodoForm from './NewTodoForm'
+import NewTagForm from './NewTagForm'
 import NewUserForm from './NewUserForm'
+import NewListForm from './NewListForm'
 import {fetchAllContacts} from './slices/contactsSlice'
 
 
@@ -32,6 +35,10 @@ function App() {
         <Route path = "/add-company" element={<NewCompanyForm/>} />
         <Route path = "/add-contact" element={<NewContactForm/>} />
         <Route path = "/add-user" element={<NewUserForm/>} />
+        <Route path = "/add-todo" element={<NewTodoForm/>} />
+        <Route path = "/add-list" element={<NewListForm/>} />
+        <Route path = "/add-tag" element={<NewTagForm/>} />
+
       </Routes>
     </Router>
   );

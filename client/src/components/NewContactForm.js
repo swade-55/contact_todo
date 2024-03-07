@@ -3,12 +3,13 @@ import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact} from './slices/contactsSlice'; 
 
 const NewContactForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const companies = useSelector(state=>state.companies.companies);
 
   const initialValues = {
     name: '',
@@ -27,14 +28,6 @@ const NewContactForm = () => {
 
   const onSubmit = (values) => {
     dispatch(addContact(values))
-      // .then(() => {
-      //   // Handle success - maybe redirect to company list or show a success message
-      //   dispatch(fetchCompanies())
-      // })
-      // .catch((error) => {
-      //   // Handle error - show an error message
-      // })
-      // .finally(() => setSubmitting(false));
   };
 
   const handleBack=()=>{
@@ -60,11 +53,18 @@ const NewContactForm = () => {
             </Field>
             <ErrorMessage name="status" component="div" />
 
-            <Field type="number" name="company_id" placeholder="Company ID" />
-            <ErrorMessage name="company_id" component="div" />
-
             <Field type="number" name="manager_id" placeholder="Manager ID" />
             <ErrorMessage name="manager_id" component="div" />
+
+            <Field as="select" name="company_id">
+              <option value="">Select Company</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </Field>
+            <ErrorMessage name="company_id" component="div" />
 
             <button type="submit" disabled={isSubmitting}>
               Submit

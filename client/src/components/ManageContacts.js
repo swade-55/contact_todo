@@ -22,10 +22,17 @@ const ManageContacts = () => {
     if (selectedCompanyId){
         dispatch(fetchContacts(selectedCompanyId))
     }
+
   },[selectedCompanyId,dispatch])
 
+  useEffect(() => {
+    // If contacts are not available, set it to an empty array
+    if (!contacts) {
+      contacts = [];
+    }
+  }, [contacts]);
 
-  // Define columns for react-table
+
   const columns = React.useMemo(
     () => [
       {

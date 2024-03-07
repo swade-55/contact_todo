@@ -1,30 +1,59 @@
 import React from 'react'
 import {useSelector,useDispatch} from 'react-redux'
-import {selectList,fetchListsForUser} from './slices/listsSlice';
+import {selectList,fetchListsForUser,fetchAllTodos} from './slices/listsSlice';
 import {fetchToDosForList} from './slices/todosSlice';
 import '../styles/Sidebar.css'
 
 function Sidebar(){
     const dispatch = useDispatch()
-    const lists = useSelector(state=>state.lists.lists);
+    const lists = useSelector((state) => state.lists.listsByContact[contactId]);
+    const todos = useSelector(state=>state.todos.allTodos);
+    const status = useSelector((state) => state.lists.status);
 
-    useEffect(()=>{
-        dispatch(fetchListsForUser(1));
-    },[dispatch])
+    useEffect(() => {
+        dispatch(fetchAllTodos());
+        if (contactId) {
+          dispatch(fetchListsForContact(contactId));
+        }
+      }, [dispatch, contactId]);
 
-    const handleListClick = (listId)=>{
-        dispatch(selectList(listId))
-        dispatch(fetchToDosForList(listId))
+    const filteredTodos = todos.filter(todo=>todo.contact_id === contactId);
+
+    const handleListClick = (listId) => {
+        dispatch(fetchToDosForList(listId));
+      };
+    
+
+    if (status === 'loading') {
+        return <div>Loading...</div>; // or any other loading indicator
     }
+
+    if (status === 'failed') {
+        return <div>Error: Failed to fetch lists</div>;
+    }
+
+    if (!lists) {
+        return null; // You can also render a placeholder if lists haven't been fetched yet
+    }
+
+    if (!Array.isArray(lists)) {
+        return <div>Error: Lists data is not an array</div>;
+    }
+
+    // Check if lists array is empty
+    if (lists.length === 0) {
+        return <div>No lists found</div>;
+    }
+
     return (
         <div className="sidebar">
-            {lists.map(list=>{
-                <div key = {lists.id} onClick={()=>handleListClick(list.id)}>
-                {lists.title}
+          {filteredTodos.map((list) => (
+            <div key={list.id} onClick={() => handleListClick(list.id)}>
+              {list.title}
             </div>
-            })}
+          ))}
         </div>
-    )
-}
+      );
+    }
 
 export default Sidebar;

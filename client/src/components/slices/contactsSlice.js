@@ -9,7 +9,7 @@ const initialState = {
 
 export const addContact = createAsyncThunk('contacts/addContact',async(contactData,{rejectWithValue})=>{
   try{
-    const response = await fetch('http://localhost:5000/contacts',{
+    const response = await fetch('/contacts',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -26,7 +26,7 @@ export const addContact = createAsyncThunk('contacts/addContact',async(contactDa
 });
 
 export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (companyId) => {
-  const url = `http://localhost:5000/company-contacts-lists/${companyId}`; 
+  const url = `/company-contacts-lists/${companyId}`; 
   const response = await fetch(url);
   
   if (!response.ok) {
@@ -39,7 +39,7 @@ export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (c
 });
 
 export const fetchAllContacts = createAsyncThunk('contacts/fetchAllContacts', async () => {
-  const response = await fetch('http://localhost:5000/contacts-lists');
+  const response = await fetch('/contacts-lists');
   if (!response.ok) {
     throw new Error('Could not fetch contacts');
   }

@@ -18,6 +18,8 @@ const contactItemStyle = {
 
 const ContactListsSidebar = ({ onContactSelect }) => {
   const contacts = useSelector((state) => state.contacts.contacts);
+
+  
   
   return (
     <div style={sidebarStyle}>

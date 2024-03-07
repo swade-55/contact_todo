@@ -13,7 +13,7 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
   if (userId === undefined) {
     userId = '1'; 
 }
-    const url = `http://localhost:5000/companies/${userId}`; 
+    const url = `/companies/${userId}`; 
     const response = await fetch(url);
   
     if (!response.ok) {
@@ -27,7 +27,7 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
 
   export const addCompany = createAsyncThunk('companies/addCompany', async (companyData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:5000/companies', {
+      const response = await fetch('/companies', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
 
   export const deleteCompany = createAsyncThunk('companies/deleteCompany', async (companyId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/companies/${companyId}`, {
+      const response = await fetch(`/companies/${companyId}`, {
         method: 'DELETE',
       });
   
@@ -64,7 +64,7 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
   
   export const updateCompany = createAsyncThunk('companies/updateCompany', async (companyData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/companies/${companyData.id}`, {
+      const response = await fetch(`/companies/${companyData.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

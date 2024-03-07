@@ -1,42 +1,51 @@
 // TodoItem.js
 import React from 'react';
 
-const todoItemStyle = (completed) => ({
-  backgroundColor: completed ? '#f9f9f9' : '#ffffff', // Light grey if completed, white if not
-  borderRadius: '4px',
-  padding: '10px 15px',
-  marginBottom: '10px',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+const todoItemStyle = {
   display: 'flex',
-  alignItems: 'center',
-  textDecoration: completed ? 'line-through' : 'none',
-  color: completed ? '#d3d3d3' : 'inherit',
-});
+  flexDirection: 'column',
+  backgroundColor: '#ffffff', // White background as per the screenshot
+  padding: '10px',
+  margin: '10px 0',
+  borderRadius: '6px',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)', // subtle shadow to match the screenshot
+};
 
-const customCheckboxStyle = (completed) => ({
-  width: '18px',
-  height: '18px',
-  border: '2px solid #d3d3d3', // Light grey border
-  borderRadius: '50%', // Circular border
+const todoCheckboxStyle = {
+  alignSelf: 'flex-start',
+};
+
+const todoTitleStyle = {
+  margin: '5px 0 10px 0',
+  fontWeight: 'bold',
+  fontSize: '16px',
+  color: '#333', // Dark text for readability
+};
+
+const tagStyle = {
   display: 'inline-block',
-  marginRight: '10px',
-  position: 'relative', // To position the checkmark absolutely within the checkbox
-  backgroundColor: completed ? '#0078d7' : 'transparent', // Microsoft blue if completed
-});
+  backgroundColor: '#e0e0e0', // Light grey background for tags
+  borderRadius: '15px',
+  padding: '5px 10px',
+  margin: '2px',
+  fontSize: '12px',
+  fontWeight: 'normal',
+};
 
 const TodoItem = ({ todo }) => {
-  // Function to toggle the completed state - you'll need to implement this
-  const toggleCompleted = () => {
-    // Implement the toggle functionality
-  };
-
   return (
-    <div style={todoItemStyle(todo.completed)} onClick={toggleCompleted}>
-      <div style={customCheckboxStyle(todo.completed)}>
-        {/* Checkmark would be a styled element or an icon */}
-      </div>
+    <div style={todoItemStyle}>
+      <input
+        type="checkbox"
+        style={todoCheckboxStyle}
+        checked={todo.completed}
+        onChange={() => {}} // Handle change
+      />
+      <div style={todoTitleStyle}>{todo.title}</div>
       <div>
-        {todo.title}
+        {todo.tags.map(tag => (
+          <span key={tag.id} style={tagStyle}>{tag.name}</span>
+        ))}
       </div>
     </div>
   );

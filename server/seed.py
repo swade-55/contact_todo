@@ -14,6 +14,7 @@ def clear_data():
     db.session.query(Contact).delete()
     db.session.query(Company).delete()
     db.session.query(User).delete()
+    db.session.query(Tag).delete()  # Clear existing tags
     db.session.commit()
 
 def create_user():
@@ -47,13 +48,16 @@ def create_todo_item(todo_list):
     return todo
 
 def create_tag():
-    tag = Tag(name=faker.word())
+    tag_name = faker.word()
+    tag = Tag(name=tag_name)
     db.session.add(tag)
     db.session.commit()
     return tag
 
 def assign_tag_to_todo(todo, tag):
-    todo.tags.append(tag)
+    todo_tag = ToDoTag(todo_id=todo.id, tag_id=tag.id, assigned_date=datetime.now())
+    db.session.add(todo_tag)
+    db.session.commit()
 
 def seed_database():
     with app.app_context():
@@ -61,15 +65,17 @@ def seed_database():
         clear_data()
 
         user = create_user()
-        company = create_company(user)
-        contact = create_contact(company)
-        todo_list = create_todo_list(contact)
-        todo = create_todo_item(todo_list)
-        tag = create_tag()
 
-        assign_tag_to_todo(todo, tag)
-
-        db.session.commit()
+        for _ in range(5):
+            company = create_company(user)
+            for _ in range(5):
+                contact = create_contact(company)
+                for _ in range(2):
+                    todo_list = create_todo_list(contact)
+                    for _ in range(2):
+                        todo = create_todo_item(todo_list)
+                        tag = create_tag()
+                        assign_tag_to_todo(todo, tag)
 
 if __name__ == '__main__':
     seed_database()
