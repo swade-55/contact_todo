@@ -35,14 +35,7 @@ def get_lists(contact_id):
     lists = ToDoList.query.filter_by(contact_id=contact_id).all()
     return jsonify([todo_list.to_dict(rules=('-contact', '-todos')) for todo_list in lists])
 
-@app.route('/lists-for-contact/<int:contact_id>', methods=['GET'])
-def get_lists_for_contact(contact_id):
-    # Query to get all ToDoList items for the given contact_id
-    todo_lists = ToDoList.query.filter_by(contact_id=contact_id).all()
-    
-    # Construct an array of dictionaries with just the list 'id' and 'title'
-    lists_data = [{'id': todo_list.id, 'title': todo_list.title} for todo_list in todo_lists]
 
-    # Return the array of list titles as a JSON response
-    return jsonify(lists_data), 200
+
+
 

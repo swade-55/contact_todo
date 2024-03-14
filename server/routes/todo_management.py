@@ -20,7 +20,7 @@ def add_todo():
         list_id=data['listId'],
     )
     
-    # Process tags if provided
+    # Process tags if providedg
     tag_ids = data.get('tags', []) 
     for tag_id in tag_ids:
         tag = Tag.query.get(tag_id) 
@@ -35,7 +35,3 @@ def add_todo():
     # Modify the return to include tags in the response if needed
     return jsonify(new_todo.to_dict()), 201
 
-@app.route('/todos/<int:list_id>', methods=['GET'])
-def get_todos(list_id):
-    todos = ToDo.query.filter_by(list_id=list_id).all()
-    return jsonify([todo.to_dict(rules=('-list', '-tags')) for todo in todos])

@@ -37,7 +37,7 @@ def add_company():
 @app.route('/companies/<int:user_id>', methods=['GET'])
 def get_companies(user_id):
     companies = Company.query.filter_by(manager_id=user_id).all()
-    companies_data = [{'id': c.id, 'name': c.name, 'manager_id': c.manager_id} for c in companies]
+    companies_data = [c.to_dict() for c in companies]
     return jsonify(companies_data)
 
 @app.route('/companies/<int:company_id>', methods=['PATCH'])

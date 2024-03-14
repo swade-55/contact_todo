@@ -45,7 +45,7 @@ class Company(db.Model, SerializerMixin):
     #         "name": self.name,
     #     }
     
-    serialize_rules = ('-manager', '-contacts',)
+    serialize_rules = ('-manager.managed_contacts','-manager.managed_companies',  '-contacts.company','-contacts.todo_lists','-contacts.manager')
     
     def __repr__(self):
         return f'<Company {self.name}>'
@@ -99,7 +99,7 @@ class Contact(db.Model, SerializerMixin):
     #         "todo_lists": [todo_list.serialize() for todo_list in self.todo_lists]
     #     }
     
-    serialize_rules = ('-company', '-manager', '-todo_lists',)
+    serialize_rules = ('-company.contacts','-company.manager', '-manager.managed_contacts','-manager.managed_companies', '-todo_lists.todos',)
         
     
     
