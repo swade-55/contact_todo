@@ -16,12 +16,6 @@ class ToDoTag(db.Model, SerializerMixin):
     todo = db.relationship('ToDo', back_populates="todo_tags")
     tag = db.relationship('Tag', back_populates="todo_tags")
     
-    # def serialize(self):
-    #     return {
-    #         "todo_id": self.todo_id,
-    #         "tag_id": self.tag_id,
-    #         "assigned_date": self.assigned_date.strftime("%Y-%m-%d %H:%M:%S") if self.assigned_date else None
-    #     }
     serialize_rules = ('-todo', '-tag',)
         
     def __repr__(self):
@@ -39,12 +33,6 @@ class Company(db.Model, SerializerMixin):
     manager = db.relationship('User', back_populates="managed_companies")
     contacts = db.relationship('Contact', back_populates="company")
     
-    # def serialize(self):
-    #     return {
-    #         "id": self.id,
-    #         "name": self.name,
-    #     }
-    
     serialize_rules = ('-manager.managed_contacts','-manager.managed_companies',  '-contacts.company','-contacts.todo_lists','-contacts.manager')
     
     def __repr__(self):
@@ -61,14 +49,6 @@ class User(db.Model,SerializerMixin):
     #Relationships
     managed_companies = db.relationship('Company', back_populates="manager")
     managed_contacts = db.relationship('Contact', back_populates="manager")
-    
-    
-    # def serialize(self):
-    #     return {
-    #         "id": self.id,
-    #         "username": self.username,
-    #         "email": self.email
-    #     }
     
     serialize_rules = ('-managed_companies', '-managed_contacts', '-password_hash',)
     def __repr__(self):
@@ -88,16 +68,6 @@ class Contact(db.Model, SerializerMixin):
     company = db.relationship('Company', back_populates="contacts")
     manager = db.relationship('User', back_populates="managed_contacts")
     
-    # def serialize(self):
-    #     return {
-    #         "id": self.id,
-    #         "name": self.name,
-    #         "status": self.status,
-    #         "company_id": self.company_id,
-    #         "manager_id": self.manager_id,
-    #         "last_contact_date": self.last_contact_date.strftime("%Y-%m-%d %H:%M:%S") if self.last_contact_date else None,
-    #         "todo_lists": [todo_list.serialize() for todo_list in self.todo_lists]
-    #     }
     
     serialize_rules = ('-company.contacts','-company.manager', '-manager.managed_contacts','-manager.managed_companies', '-todo_lists.todos',)
         
@@ -114,15 +84,6 @@ class ToDoList(db.Model,SerializerMixin):
     contact_id = db.Column(db.Integer,db.ForeignKey('contact.id'),nullable=False)
     todos = db.relationship('ToDo', backref='list', lazy=True)
     
-    # def serialize(self):
-    #     todos_data = [todo.serialize() for todo in self.todos]
-    #     return {
-    #         "id": self.id,
-    #         "title": self.title,
-    #         "contact_id": self.contact_id,
-    #         # "todos": todos_data  # Serialize todos here
-    #         "todos": [todo.serialize() for todo in self.todos]
-    #     }
         
     serialize_rules = ('-contact', '-todos.list',)
     
@@ -144,18 +105,7 @@ class ToDo(db.Model,SerializerMixin):
     todo_tags = db.relationship('ToDoTag', back_populates="todo")
     
     
-    # def serialize(self):
-    #     return {
-    #         "id": self.id,
-    #         "title": self.title,
-    #         "description": self.description,
-    #         "completed": self.completed,
-    #         "date_created": self.date_created.strftime("%Y-%m-%d %H:%M:%S") if self.date_created else None,
-    #         "due_date": self.due_date.strftime("%Y-%m-%d %H:%M:%S") if self.due_date else None,
-    #         "list_id": self.list_id
-    #     }
-    
-    serialize_rules = ('-tags', '-todo_tags', '-list',)
+    serialize_rules = ('-tags.todo_tags','-tags.todos', '-todo_tags', '-list',)
     
     def __repr__(self):
         return '<ToDo %r>' % self.description
@@ -167,12 +117,6 @@ class Tag(db.Model,SerializerMixin):
     
     todo_tags = db.relationship('ToDoTag', back_populates="tag")
     todos = db.relationship('ToDo', secondary='todo_tag', back_populates="tags")
-    
-    # def serialize(self):
-    #     return {
-    #         "id": self.id,
-    #         "name": self.name
-    #     }
     
     serialize_rules = ('-todos', '-todo_tags',)
     

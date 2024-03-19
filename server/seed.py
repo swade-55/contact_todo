@@ -49,10 +49,14 @@ def create_todo_item(todo_list):
 
 def create_tag():
     tag_name = faker.word()
-    tag = Tag(name=tag_name)
-    db.session.add(tag)
-    db.session.commit()
-    return tag
+    existing_tag = Tag.query.filter_by(name=tag_name).first()
+    if existing_tag is None:
+        tag = Tag(name=tag_name)
+        db.session.add(tag)
+        db.session.commit()
+        return tag
+    else:
+        return existing_tag  # Return the existing tag if found
 
 def assign_tag_to_todo(todo, tag):
     todo_tag = ToDoTag(todo_id=todo.id, tag_id=tag.id, assigned_date=datetime.now())
