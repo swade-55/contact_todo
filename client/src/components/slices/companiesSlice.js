@@ -9,10 +9,6 @@ const initialState = {
 
 // Async thunk for fetching companies
 export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async (userId) => {
-
-  if (userId === undefined) {
-    userId = '1'; 
-}
     const url = `/companies/${userId}`; 
     const response = await fetch(url);
   
@@ -126,10 +122,7 @@ export const companiesSlice = createSlice({
           // Update the company in the array
           state.companies[index] = action.payload;
         } else {
-          // This case handles if for some reason the company is not found; you might decide to add it instead
           console.warn("Updated company not found in the array");
-          // Optionally add the company to the array
-          // state.companies.push(action.payload);
         }
       })
       .addCase(updateCompany.rejected, (state, action) => {

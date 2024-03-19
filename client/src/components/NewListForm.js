@@ -1,49 +1,60 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import {useNavigate} from 'react-router-dom'
-import { addList } from './slices/listsSlice'; 
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { addList } from './slices/contactsSlice';
+
+const newListSchema = Yup.object().shape({
+  title: Yup.string()
+    .min(2, 'Title must be at least 2 characters long')
+    .required('Title is required'),
+  contactId: Yup.number()
+    .positive('Contact ID must be a positive number')
+    .required('Contact ID is required')
+    .integer('Contact ID must be an integer'),
+});
 
 const NewListForm = () => {
-  const [title, setTitle] = useState('');
-  const [contactId, setContactId] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(addList({
-      title,
-      contact_id: parseInt(contactId, 10), 
-    }));
-    // Reset form fields
-    setTitle('');
-    setContactId('');
-  };
-
-  const handleBack=()=>{
-    navigate('/manage-todo')
-  }
+  const contacts = useSelector(state => state.contacts.contacts)
+  console.log('contacts', contacts)
 
   return (
     <div>
-      <button onClick={handleBack}>Back to Manage Todo</button>
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="List title"
-        required
-      />
-      <input
-        type="number"
-        value={contactId}
-        onChange={(e) => setContactId(e.target.value)}
-        placeholder="Contact ID"
-        required
-      />
-      <button type="submit">Add List</button>
-    </form>
+      <button onClick={() => navigate('/manage-todo')}>Back to Manage Todo</button>
+      <Formik
+        initialValues={{ title: '', contactId: '' }}
+        validationSchema={newListSchema}
+        onSubmit={(values, { resetForm }) => {
+          dispatch(addList({
+            title: values.title,
+            contact_id: parseInt(values.contactId, 10),
+          }));
+          resetForm();
+        }}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <Field type="text" name="title" placeholder="List title" />
+            <ErrorMessage name="title" component="div" />
+            <Field as="select" name="contactId">
+              <option value="">Select Contact</option>
+              {contacts.map(contact => (
+                <option key={contact.id} value={contact.id}>
+                  {contact.name}
+                </option>
+              ))}
+            </Field>
+            <ErrorMessage name="contactId" component="div" />
+
+            <button type="submit" disabled={isSubmitting}>
+              Add List
+            </button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

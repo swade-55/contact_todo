@@ -1,38 +1,48 @@
-// NewCompanyForm.jsx
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact} from './slices/contactsSlice'; 
+import { addContact } from './slices/contactsSlice';
 
 const NewContactForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const companies = useSelector(state=>state.companies.companies);
+  const companies = useSelector((state) => state.companies.companies);
 
   const initialValues = {
     name: '',
-    status:'',
-    company_id:'',
-    manager_id:'',
-
+    status: '',
+    company_id: '',
+    manager_id: '',
   };
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Contact name is required'),
-    status: Yup.string().required('Status is required'),
-    company_id: Yup.number().required('Company ID is required').positive().integer(),
-    manager_id: Yup.number().required('Manager ID is required').positive().integer(),
+    name: Yup.string()
+      .required('Contact name is required')
+      .matches(/^[A-Z][a-z]+(?: [A-Z][a-z]+)*$/, 'Name must start with a capital letter and contain only letters'),
+    status: Yup.string()
+      .required('Status is required')
+      .oneOf(['Hot', 'Cold', 'Warm'], 'Invalid status selected'),
+    company_id: Yup.number()
+      .required('Company ID is required')
+      .positive('Company ID must be positive')
+      .integer('Company ID must be an integer'),
+    manager_id: Yup.number()
+      .required('Manager ID is required')
+      .positive('Manager ID must be positive')
+      .integer('Manager ID must be an integer'),
   });
 
-  const onSubmit = (values) => {
-    dispatch(addContact(values))
+
+  const onSubmit = (values, { resetForm }) => {
+    dispatch(addContact(values));
+    resetForm();
   };
 
-  const handleBack=()=>{
-    navigate('/manage-contacts')
-  }
+  const handleBack = () => {
+    navigate('/manage-contacts');
+  };
 
   return (
     <div>
@@ -44,7 +54,6 @@ const NewContactForm = () => {
             <Field type="text" name="name" placeholder="Contact Name" />
             <ErrorMessage name="name" component="div" />
 
-            {/* Dropdown for status */}
             <Field as="select" name="status">
               <option value="">Select Status</option>
               <option value="Hot">Hot</option>

@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
-import { addCompany,fetchCompanies } from './slices/companiesSlice'; 
+import { addCompany} from './slices/companiesSlice'; 
 
 const NewCompanyForm = () => {
   const navigate = useNavigate();
@@ -20,21 +20,10 @@ const NewCompanyForm = () => {
     manager_id: Yup.number().required('Manager ID is required').positive().integer(),
   });
 
-  const onSubmit = (values, { setSubmitting }) => {
-    dispatch(addCompany(values))
-      .unwrap()
-      .then((newCompany) => {
-        // Handle success - maybe redirect to company list or show a success message
-        // No need to fetch all companies if the state is already updated
-        // navigate('/company-list'); // Redirect to the list of companies or wherever appropriate
-      })
-      .catch((error) => {
-        // Handle error - show an error message
-        console.error('Failed to add company:', error);
-      })
-      .finally(() => {
-        setSubmitting(false);
-      });
+
+  const onSubmit = (values, { resetForm }) => {
+    dispatch(addCompany(values));
+    resetForm();
   };
 
 

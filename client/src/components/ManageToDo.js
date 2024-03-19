@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchAllContacts } from './slices/contactsSlice';
 import ContactListsSidebar from './ContactListsSidebar';
 import ListsDisplay from './ListsDisplay';
-import TodoList from './TodoList' 
-import {Navigate, useNavigate} from 'react-router-dom'
-import {fetchListsForContact, addList} from './slices/listsSlice';
+import {useNavigate} from 'react-router-dom'
 import TodoSidebar from './TodoSidebar';
+
+
+const contentContainerStyle = {
+  display: 'flex', // Use flex for horizontal layout
+  flexGrow: 1, // Allow the container to expand to fill the available space
+  overflow: 'hidden', // Prevent any child from overflowing
+};
+const headerStyle = {
+};
 
 const ManageToDo = () => {
   const dispatch = useDispatch();
@@ -27,18 +33,16 @@ const ManageToDo = () => {
   const handleListSelect = (listObject) => {
     console.log(`List selected with ID:`,listObject);
     setSelectedList(listObject);
-    setTodoSidebarVisible(false);
+    setTodoSidebarVisible(true);
   };
 
-  useEffect(() => {
-    dispatch(fetchAllContacts());
-  }, [dispatch]);
+  const lists = useSelector((state) => state.contacts.contacts);
+  console.log("These are my lists",lists)
 
   const handleContactSelect = (contactId) => {
     console.log(`Contact selected with ID: ${contactId}`);
     setSelectedContactId(contactId);
     setSelectedList(null);
-    dispatch(fetchListsForContact(contactId))
   };
 
   const handleAddList = ()=>{
@@ -50,17 +54,19 @@ const ManageToDo = () => {
 
 
 return (
-  <div>
+  <div >
+    <div style={headerStyle}>
     <button onClick={handleBack}>Back to Home</button>  
     <button onClick={handleAddForm}>Add New Todo</button>  
     <button onClick={handleAddList}>Add New List</button>  
     <button onClick={handleAddTag}>Add New Tag</button> 
-    <div style={{ display: 'flex' }}>
+    </div>
+    <div style={contentContainerStyle}>
       <div style={{ width: '250px' }}>
         <ContactListsSidebar onContactSelect={handleContactSelect} />
       </div>
       <div style={{ flexGrow: 1, padding: '0 20px' }}>
-        {selectedContactId && !selectedList && 
+        {selectedContactId && 
           <ListsDisplay 
             selectedContactId={selectedContactId} 
             onSelectList={handleListSelect} 
@@ -70,11 +76,11 @@ return (
           <TodoSidebar
             selectedListObject={selectedList}
             onSelectTodo={setSelectedTodoId}
-            onHide={()=>setTodoSidebarVisible(false)}
+            onHide={()=>setTodoSidebarVisible(true)}
           />
         )}
         </div>
-      </div>
+        </div>
     );
 };
 

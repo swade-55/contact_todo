@@ -12,7 +12,7 @@
   background-color: #8B0000;
   color: white;
   padding: 20px;
-  margin-bottom: 0; /* Remove bottom margin if you want the buttons to be close to the header */
+  margin-bottom: 0; 
 }
 
 h1 {
@@ -54,6 +54,6 @@ h2 {
   position: absolute; /* Stick footer at the bottom */
   bottom: 0;
   width: 100%;
-  background-color: #8B0000; /* Optional: if you want the footer to have a background color */
+  background-color: #8B0000; 
   color: white; /* Change text color if footer has a background */
 }

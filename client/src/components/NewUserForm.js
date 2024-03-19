@@ -25,7 +25,6 @@ const NewUserForm = () => {
     // Construct the API endpoint
     const apiUrl = '/users'; 
 
-    // Use Fetch API to submit form data
     fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -35,24 +34,19 @@ const NewUserForm = () => {
     })
     .then(response => {
         if (!response.ok) {
-            // Handle non-2xx status codes
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
         console.log('Success:', data);
-        // Handle success logic here, e.g., redirect or display success message
-        // Optionally reset the form
         resetForm();
     })
     .catch(error => {
         console.error('Error:', error);
-        // Handle errors, e.g., display error message to the user
         setErrors({ submit: 'Failed to create user' });
     })
     .finally(() => {
-        // Stop the submission regardless of the outcome
         setSubmitting(false);
     });
 };

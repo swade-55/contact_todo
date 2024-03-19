@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import ManageContacts from './ManageContacts';
 import ManageCompanies from './ManageCompanies';
 import {fetchCompanies} from './slices/companiesSlice'
+import {fetchAllTags} from './slices/tagsSlice'
 import ManageToDo from './ManageToDo';
 import {useDispatch} from 'react-redux'
 import NewCompanyForm from './NewCompanyForm'
@@ -21,9 +22,11 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    //userId will act as a placeholder until feature is developed to create users via sign up form(unfinished stretch goals)
     const userId = 1;
     dispatch(fetchCompanies(userId));
-    dispatch(fetchAllContacts());
+    dispatch(fetchAllContacts(userId));
+    dispatch(fetchAllTags());
   }, [dispatch]);
   return (
     <Router>
