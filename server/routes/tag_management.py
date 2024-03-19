@@ -6,9 +6,7 @@ from config import app
 @app.route('/tags', methods=['GET'])
 def get_all_tags():
     try:
-        # Query all tags
         tags = Tag.query.all()
-        # Serialize the tags. This assumes your Tag model has a serialize method.
         tags_data = [tag.to_dict() for tag in tags]
         return jsonify(tags_data), 200
     except Exception as e:

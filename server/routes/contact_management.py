@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from models import db, Contact, ToDoList, ToDo
+from models import db, Contact, ToDoList, ToDo, User
 from config import app
 
 
@@ -10,7 +10,7 @@ def add_contact():
     new_contact = Contact(
         name=data['name'],
         status = data['status'],
-        company_id = data['company_id'],
+        contact_id = data['contact_id'],
         manager_id = data['manager_id']
     )
     db.session.add(new_contact)
@@ -57,4 +57,43 @@ def get_all_contacts_and_lists_tags(user_id):
     except Exception as e:
         # Handle general exceptions
         return jsonify({'message': str(e)}), 500
+    
+    
+@app.route('/contacts/<int:contact_id>', methods=['PATCH'])
+def update_contact(contact_id):
+    try:
+        # Fetch the contact based on contact_id
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return jsonify({'message': 'Contact not found'}), 404
+
+        data = request.json
+        if 'name' in data:
+            contact.name = data['name']
+            
+        if 'status' in data:
+            contact.status = data['status']
+        
+        if 'manager_id' in data:
+            manager = User.query.get(data['manager_id'])
+            if not manager:
+                return jsonify({'message': 'Manager not found'}), 404
+            contact.manager_id = data['manager_id']
+        
+        db.session.commit()
+        return jsonify(contact.to_dict()), 200
+    except Exception as e:
+        # Handle exceptions and errors
+        return jsonify({'message': str(e)}), 500
+    
+    
+@app.route('/companies/<int:contact_id>', methods=['DELETE'])
+def delete_contact(contact_id):
+    contact = Contact.query.get(contact_id)
+    if contact:
+        db.session.delete(contact)
+        db.session.commit()
+        return jsonify({"message": "Contact deleted"}), 200
+    else:
+        return jsonify({"message": "Contact not found"}), 404
     
