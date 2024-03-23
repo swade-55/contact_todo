@@ -39,6 +39,7 @@ def get_companies(user_id):
     companies = Company.query.filter_by(manager_id=user_id).all()
     companies_data = [c.to_dict() for c in companies]
     return jsonify(companies_data)
+    #test
 
 @app.route('/companies/<int:company_id>', methods=['PATCH'])
 def update_company(company_id):
