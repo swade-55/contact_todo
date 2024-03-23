@@ -34,10 +34,10 @@ const NewContactForm = () => {
       .integer('Manager ID must be an integer'),
   });
 
-
   const onSubmit = (values, { resetForm }) => {
     dispatch(addContact(values));
     resetForm();
+    navigate('/manage-contacts')
   };
 
   const handleBack = () => {
@@ -45,42 +45,56 @@ const NewContactForm = () => {
   };
 
   return (
-    <div>
-      <button onClick={handleBack}>Back to Manage Contacts</button>
-      <h1>Add New Contact</h1>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-        {({ isSubmitting }) => (
-          <Form>
-            <Field type="text" name="name" placeholder="Contact Name" />
-            <ErrorMessage name="name" component="div" />
+    <div className="card bg-base-100 shadow-xl p-5">
+      <div className="card-body">
+        <button onClick={handleBack} className="btn btn-outline btn-accent mb-4">Back to Manage Contacts</button>
+        <h1 className="card-title mb-4">Add New Contact</h1>
+        <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+          {({ isSubmitting }) => (
+            <Form>
+              <label htmlFor="name" className="label">
+                Contact Name
+              </label>
+              <Field id="name" type="text" name="name" placeholder="Contact Name" className="input input-bordered w-full mb-3" />
+              <ErrorMessage name="name" component="div" className="text-error mb-3" />
 
-            <Field as="select" name="status">
-              <option value="">Select Status</option>
-              <option value="Hot">Hot</option>
-              <option value="Cold">Cold</option>
-              <option value="Warm">Warm</option>
-            </Field>
-            <ErrorMessage name="status" component="div" />
+              <label htmlFor="status" className="label">
+                Status
+              </label>
+              <Field as="select" name="status" className="select select-bordered w-full mb-3">
+                <option value="">Select Status</option>
+                <option value="Hot">Hot</option>
+                <option value="Cold">Cold</option>
+                <option value="Warm">Warm</option>
+              </Field>
+              <ErrorMessage name="status" component="div" className="text-error mb-3" />
 
-            <Field type="number" name="manager_id" placeholder="Manager ID" />
-            <ErrorMessage name="manager_id" component="div" />
+              <label htmlFor="manager_id" className="label">
+                Manager ID
+              </label>
+              <Field id="manager_id" type="number" name="manager_id" placeholder="Manager ID" className="input input-bordered w-full mb-3" />
+              <ErrorMessage name="manager_id" component="div" className="text-error mb-3" />
 
-            <Field as="select" name="company_id">
-              <option value="">Select Company</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
-            </Field>
-            <ErrorMessage name="company_id" component="div" />
+              <label htmlFor="company_id" className="label">
+                Company
+              </label>
+              <Field as="select" name="company_id" className="select select-bordered w-full mb-3">
+                <option value="">Select Company</option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </Field>
+              <ErrorMessage name="company_id" component="div" className="text-error mb-3" />
 
-            <button type="submit" disabled={isSubmitting}>
-              Submit
-            </button>
-          </Form>
-        )}
-      </Formik>
+              <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+                Submit
+              </button>
+            </Form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
 };

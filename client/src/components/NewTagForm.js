@@ -22,27 +22,45 @@ const NewTagForm = () => {
   };
 
   return (
-    <div>
-      <button onClick={handleBack}>Back to Manage Todo</button>
-      <Formik
-        initialValues={{ tagName: '' }}
-        validationSchema={tagSchema}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
-          dispatch(addTag({ name: values.tagName }));
-          resetForm();
-          setSubmitting(false);
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <Field type="text" name="tagName" placeholder="Tag Name" />
-            <ErrorMessage name="tagName" component="div" />
-            <button type="submit" disabled={isSubmitting}>
-              Add Tag
-            </button>
-          </Form>
-        )}
-      </Formik>
+    <div className="card bg-base-200 p-4">
+      <div className="card-body">
+        <Formik
+          initialValues={{ tagName: '' }}
+          validationSchema={tagSchema}
+          onSubmit={(values, { setSubmitting, resetForm }) => {
+            dispatch(addTag({ name: values.tagName }));
+            resetForm();
+            setSubmitting(false);
+          }}
+        >
+          {({ isSubmitting }) => (
+            <Form className="form-control">
+              <label className="label">
+                <span className="label-text">Tag Name</span>
+              </label>
+              <Field
+                type="text"
+                name="tagName"
+                placeholder="Tag Name"
+                className="input input-bordered w-full"
+              />
+              <ErrorMessage name="tagName" component="div" className="text-error" />
+              <div className="form-control mt-6">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn btn-primary"
+                >
+                  Add Tag
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+        <button onClick={handleBack} className="btn btn-ghost mt-4">
+          Back to Manage Todo
+        </button>
+      </div>
     </div>
   );
 };

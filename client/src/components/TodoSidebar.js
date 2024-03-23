@@ -1,32 +1,28 @@
 // TodoSidebar.js
-import React, {useState} from 'react';
+import React from 'react';
 import TodoItem from './TodoItem';
 
 const TodoSidebar = ({ selectedListObject, onSelectTodo, onHide }) => {
   const completedTodos = selectedListObject?.todos?.filter(todo => todo.completed);
   const availableTodos = selectedListObject?.todos?.filter(todo => !todo.completed);
 
-  const toggleSidebarVisibility = () => {
-    onHide();
-  };
   
   return (
-    <div style={{ width: '250px', padding: '10px' }}>
+    <div className="sidebar bg-base-100 text-base-content w-64 space-y-4 p-4">
 
-      <button onClick={onHide}>Hide Todo Sidebar</button>
         <div>
-          <div>
-            <h2>Available Todos</h2>
+            <h2 className="sidebar-title text-lg font-bold">Available Todos</h2>
+          <div className="menu menu-compact bg-base-100 p-2 rounded-box">
             {availableTodos?.map(todo => (
-              <div key={todo.id} onClick={() => onSelectTodo(todo.id)}>
+              <div key={todo.id} onClick={() => onSelectTodo(todo.id)} className="menu-item">
                 <TodoItem todo={todo} />
               </div>
             ))}
           </div>
-          <div>
-            <h2>Completed Todos</h2>
+            <h2 className="sidebar-title text-lg font-bold">Completed Todos</h2>
+          <div className="menu menu-compact bg-base-100 p-2 rounded-box">
             {completedTodos?.map(todo => (
-              <div key={todo.id} onClick={() => onSelectTodo(todo.id)}>
+              <div key={todo.id} onClick={() => onSelectTodo(todo.id)} className="menu-item">
                 <TodoItem todo={todo} />
               </div>
             ))}

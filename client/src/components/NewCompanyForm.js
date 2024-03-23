@@ -1,10 +1,9 @@
-// NewCompanyForm.jsx
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
-import { addCompany} from './slices/companiesSlice'; 
+import { addCompany } from './slices/companiesSlice';
 
 const NewCompanyForm = () => {
   const navigate = useNavigate();
@@ -12,7 +11,7 @@ const NewCompanyForm = () => {
 
   const initialValues = {
     name: '',
-    manager_id: '', 
+    manager_id: '',
   };
 
   const validationSchema = Yup.object().shape({
@@ -20,36 +19,46 @@ const NewCompanyForm = () => {
     manager_id: Yup.number().required('Manager ID is required').positive().integer(),
   });
 
-
   const onSubmit = (values, { resetForm }) => {
     dispatch(addCompany(values));
     resetForm();
+    navigate('/manage-companies')
+    
   };
 
-
-  const handleBack=()=>{
-    navigate('/manage-companies')
-  }
+  const handleBack = () => {
+    navigate('/manage-companies');
+  };
 
   return (
-    <div>
-      <button onClick={handleBack}>Back to Manage Companies</button>
-      <h1>Add New Company</h1>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-        {({ isSubmitting }) => (
-          <Form>
-            <Field type="text" name="name" placeholder="Company Name" />
-            <ErrorMessage name="name" component="div" />
+    <div className="card bg-base-100 shadow-xl p-5">
+      <div className="card-body">
+        <button onClick={handleBack} className="btn btn-outline btn-accent">
+          Back to Manage Companies
+        </button>
+        <h1 className="card-title my-4">Add New Company</h1>
+        <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+          {({ isSubmitting }) => (
+            <Form>
+              <label htmlFor="name" className="label">
+                Company Name
+              </label>
+              <Field id="name" type="text" name="name" placeholder="Company Name" className="input input-bordered w-full" />
+              <ErrorMessage name="name" component="div" className="text-error" />
 
-            <Field type="number" name="manager_id" placeholder="Manager ID" />
-            <ErrorMessage name="manager_id" component="div" />
+              <label htmlFor="manager_id" className="label">
+                Manager ID
+              </label>
+              <Field id="manager_id" type="number" name="manager_id" placeholder="Manager ID" className="input input-bordered w-full" />
+              <ErrorMessage name="manager_id" component="div" className="text-error" />
 
-            <button type="submit" disabled={isSubmitting}>
-              Submit
-            </button>
-          </Form>
-        )}
-      </Formik>
+              <button type="submit" disabled={isSubmitting} className="btn btn-primary mt-4">
+                Submit
+              </button>
+            </Form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
 };

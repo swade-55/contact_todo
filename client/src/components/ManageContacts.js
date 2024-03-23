@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { updateContact, deleteContact } from './slices/contactsSlice';
-import '../styles/ManageContacts.css';
 
 const ManageContacts = () => {
   const contacts = useSelector((state) => state.contacts.contacts);
@@ -28,8 +27,8 @@ const ManageContacts = () => {
   };
 
   const filteredContacts = selectedCompanyId
-    ? contacts.filter(contact => contact.company_id.toString() === selectedCompanyId)
-    : contacts;
+  ? contacts.filter(contact => contact.company_id?.toString() === selectedCompanyId)
+  : contacts;
 
   const handleAddContactClick = () => {
     navigate('/add-contact');
@@ -53,10 +52,11 @@ const ManageContacts = () => {
   };
 
   return (
-    <div className="container">
-      <button onClick={handleAddContactClick}>Add New Contact</button>
-      <button onClick={handleBack}>Back to Home</button>
-      <select value={selectedCompanyId} onChange={handleCompanyChange}>
+    <div className="container mx-auto p-4">
+      <div className="flex gap-4 mb-4">
+      <button onClick={handleAddContactClick} className="btn btn-primary">Add New Contact</button>
+      <button onClick={handleBack} className="btn">Back to Home</button>
+      <select value={selectedCompanyId} onChange={handleCompanyChange} className="select select-bordered">
         <option value="">Select a Company</option>
         {companies.map((company) => (
           <option key={company.id} value={company.id}>
@@ -64,7 +64,9 @@ const ManageContacts = () => {
           </option>
         ))}
       </select>
-      <table className="table">
+      </div>
+      <div className="overflow-x-auto">
+      <table className="table w-full">
         <thead>
           <tr>
             <th>ID</th>
@@ -78,7 +80,7 @@ const ManageContacts = () => {
         {filteredContacts.map((contact) => (
             <tr key={contact.id}>
               <td>{contact.id}</td>
-              <td>{contact.company.name}</td>
+              <td>Company Name: {contact.company?.name ?? 'No Company'}</td>
               <td>
                 {editRowId === contact.id ? (
                   <Formik
@@ -93,17 +95,19 @@ const ManageContacts = () => {
                   >
                     {({ isSubmitting }) => (
                       <Form>
-                        <Field name="name" type="text" />
-                        <ErrorMessage name="name" component="div" />
-                        <Field as="select" name="status">
+                        <Field name="name" type="text" className="input input-bordered" />
+                        <ErrorMessage name="name" component="div" className="text-error"/>
+                        <Field as="select" name="status" className="select select-bordered">
                           <option value="">Select Status</option>
                           <option value="hot">Hot</option>
                           <option value="warm">Warm</option>
                           <option value="cold">Cold</option>
                         </Field>
-                        <ErrorMessage name="status" component="div" />
+                        <ErrorMessage name="status" component="div" className="text-error"/>
+                        <div className="flex gap-2 mt-2">
                         <button type="submit" disabled={isSubmitting}>Save</button>
                         <button type="button" onClick={handleCancelClick}>Cancel</button>
+                        </div>
                       </Form>
                     )}
                   </Formik>
@@ -115,19 +119,22 @@ const ManageContacts = () => {
                 {contact.status}
               </td>
               <td>
+              <div className="flex gap-2">
                 {editRowId === contact.id ? (
                   <>
-                    <button onClick={() => handleDeleteClick(contact.id)}>Delete</button>
+                    <button onClick={() => handleDeleteClick(contact.id)} className="btn btn-error btn-sm">Delete</button>
                     <button onClick={handleCancelClick}>Cancel</button>
                   </>
                 ) : (
-                  <button onClick={() => setEditRowId(contact.id)}>Edit</button>
+                  <button onClick={() => setEditRowId(contact.id)} className="btn btn-info btn-sm">Edit</button>
                 )}
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

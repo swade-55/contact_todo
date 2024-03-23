@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { updateCompany, deleteCompany } from './slices/companiesSlice';
-import '../styles/ManageCompanies.css';
 
 const ManageCompanies = () => {
   const companies = useSelector((state) => state.companies.companies);
@@ -45,60 +44,66 @@ const ManageCompanies = () => {
   };
 
   return (
-    <div className="container">
-      <button onClick={handleAddCompanyClick}>Add New Company</button>
-      <button onClick={handleAddUserClick}>Add New User</button>
-      <button onClick={handleBack}>Back to Home</button>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Manager ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies.map((company) => (
-            <tr key={company.id}>
-              <td>{company.id}</td>
-              <td>{company.manager_id}</td>
-              <td>
-                {editRowId === company.id ? (
-                  <Formik
-                    initialValues={{ name: company.name }}
-                    validationSchema={companySchema}
-                    onSubmit={(values, { setSubmitting }) => {
-                      dispatch(updateCompany({ ...company, name: values.name }))
-                        .catch((error) => console.error('Update failed', error));
-                      setEditRowId(null);
-                      setSubmitting(false);
-                    }}
-                  >
-                    {({ isSubmitting }) => (
-                      <Form>
-                        <Field name="name" type="text" />
-                        <ErrorMessage name="name" component="div" />
-                        <button type="submit" disabled={isSubmitting}>Save</button>
-                        <button type="button" onClick={handleCancelClick}>Cancel</button>
-                      </Form>
-                    )}
-                  </Formik>
-                ) : (
-                  company.name
-                )}
-              </td>
-              <td>
-                {editRowId === company.id ? (
-                  <button onClick={() => handleDeleteClick(company.id)}>Delete</button>
-                ) : (
-                  <button onClick={() => setEditRowId(company.id)}>Edit</button>
-                )}
-              </td>
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between mb-4">
+        <button onClick={handleAddCompanyClick} className="btn btn-primary">Add New Company</button>
+        <button onClick={handleAddUserClick} className="btn btn-secondary">Add New User</button>
+        <button onClick={handleBack} className="btn">Back to Home</button>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="table w-full">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Manager ID</th>
+              <th>Name</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {companies.map((company) => (
+              <tr key={company.id}>
+                <td>{company.id}</td>
+                <td>{company.manager_id}</td>
+                <td>
+                  {editRowId === company.id ? (
+                    <Formik
+                      initialValues={{ name: company.name }}
+                      validationSchema={companySchema}
+                      onSubmit={(values, { setSubmitting }) => {
+                        dispatch(updateCompany({ ...company, name: values.name }))
+                          .catch((error) => console.error('Update failed', error));
+                        setEditRowId(null);
+                        setSubmitting(false);
+                      }}
+                    >
+                      {({ isSubmitting }) => (
+                        <Form>
+                          <Field name="name" type="text" className="input input-bordered w-full max-w-xs" />
+                          <ErrorMessage name="name" component="div" className="text-error" />
+                          <div className="flex justify-end mt-2">
+                            <button type="submit" disabled={isSubmitting} className="btn btn-success">Save</button>
+                            <button type="button" onClick={handleCancelClick} className="btn btn-ghost">Cancel</button>
+                          </div>
+                        </Form>
+                      )}
+                    </Formik>
+                  ) : (
+                    company.name
+                  )}
+                </td>
+                <td>
+                  {editRowId === company.id ? (
+                    <button onClick={() => handleDeleteClick(company.id)} className="btn btn-error">Delete</button>
+                  ) : (
+                    <button onClick={() => setEditRowId(company.id)} className="btn btn-accent">Edit</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

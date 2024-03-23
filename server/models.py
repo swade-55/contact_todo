@@ -31,7 +31,7 @@ class Company(db.Model, SerializerMixin):
     
     #Relationships
     manager = db.relationship('User', back_populates="managed_companies")
-    contacts = db.relationship('Contact', back_populates="company")
+    contacts = db.relationship('Contact', back_populates="company", cascade="all, delete")
     
     serialize_rules = ('-manager.managed_contacts','-manager.managed_companies',  '-contacts.company','-contacts.todo_lists','-contacts.manager')
     
@@ -63,7 +63,7 @@ class Contact(db.Model, SerializerMixin):
     status = db.Column(db.String(50),nullable=False) # hot,warm,cold
     company_id = db.Column(db.Integer,db.ForeignKey('company.id'))
     manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
-    todo_lists = db.relationship('ToDoList',backref='contact',lazy=True)
+    todo_lists = db.relationship('ToDoList',backref='contact',lazy=True, cascade="all, delete")
     
     company = db.relationship('Company', back_populates="contacts")
     manager = db.relationship('User', back_populates="managed_contacts")
@@ -82,7 +82,7 @@ class ToDoList(db.Model,SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), nullable=False)
     contact_id = db.Column(db.Integer,db.ForeignKey('contact.id'),nullable=False)
-    todos = db.relationship('ToDo', backref='list', lazy=True)
+    todos = db.relationship('ToDo', backref='list', lazy=True, cascade="all, delete")
     
         
     serialize_rules = ('-contact', '-todos.list',)
@@ -101,8 +101,8 @@ class ToDo(db.Model,SerializerMixin):
     due_date = db.Column(db.DateTime, nullable=True) 
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False)
     
-    tags = db.relationship('Tag', secondary='todo_tag', back_populates="todos")
-    todo_tags = db.relationship('ToDoTag', back_populates="todo")
+    tags = db.relationship('Tag', secondary='todo_tag', back_populates="todos",overlaps="todo_tags,tags")
+    todo_tags = db.relationship('ToDoTag', back_populates="todo", overlaps="tags,todo_tags")
     
     
     serialize_rules = ('-tags.todo_tags','-tags.todos', '-todo_tags', '-list',)
@@ -115,8 +115,8 @@ class Tag(db.Model,SerializerMixin):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(80),nullable=False,unique=True)
     
-    todo_tags = db.relationship('ToDoTag', back_populates="tag")
-    todos = db.relationship('ToDo', secondary='todo_tag', back_populates="tags")
+    todos = db.relationship('ToDo', secondary='todo_tag', back_populates="tags", overlaps="todo_tags,todos")
+    todo_tags = db.relationship('ToDoTag', back_populates="tag", overlaps="todos,todo_tags")
     
     serialize_rules = ('-todos', '-todo_tags',)
     

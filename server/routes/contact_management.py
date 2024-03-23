@@ -8,10 +8,10 @@ from config import app
 def add_contact():
     data = request.json
     new_contact = Contact(
-        name=data['name'],
-        status = data['status'],
-        contact_id = data['contact_id'],
-        manager_id = data['manager_id']
+        name=data.get('name'),
+        status = data.get('status'),
+        manager_id = data.get('manager_id'),
+        company_id=data.get('company_id')
     )
     db.session.add(new_contact)
     db.session.commit()
@@ -97,3 +97,4 @@ def delete_contact(contact_id):
     else:
         return jsonify({"message": "Contact not found"}), 404
     
+

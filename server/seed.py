@@ -68,18 +68,18 @@ def seed_database():
         db.create_all()
         clear_data()
 
-        user = create_user()
+        # user = create_user()
 
-        for _ in range(5):
-            company = create_company(user)
-            for _ in range(5):
-                contact = create_contact(company)
-                for _ in range(2):
-                    todo_list = create_todo_list(contact)
-                    for _ in range(2):
-                        todo = create_todo_item(todo_list)
-                        tag = create_tag()
-                        assign_tag_to_todo(todo, tag)
+        # for _ in range(5):
+        #     company = create_company(user)
+        #     for _ in range(5):
+        #         contact = create_contact(company)
+        #         for _ in range(2):
+        #             todo_list = create_todo_list(contact)
+        #             for _ in range(2):
+        #                 todo = create_todo_item(todo_list)
+        #                 tag = create_tag()
+        #                 assign_tag_to_todo(todo, tag)
 
 if __name__ == '__main__':
     seed_database()

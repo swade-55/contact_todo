@@ -10,6 +10,4 @@ db.init_app(app)
 
 migrate = Migrate(app,db)
 
-
-# CORS(app)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})

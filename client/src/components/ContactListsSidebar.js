@@ -1,30 +1,17 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-const sidebarStyle = {
-  backgroundColor: '#252525', // Dark grey background
-  color: 'white',
-  padding: '20px',
-  width: '250px',
-  height: '100vh',
-  overflowY: 'auto',
-};
-
-const contactItemStyle = {
-  padding: '10px',
-  cursor: 'pointer',
-  borderBottom: '1px solid #ddd', // light grey border
-};
 
 const ContactListsSidebar = ({ onContactSelect }) => {
   const contacts = useSelector((state) => state.contacts.contacts);
+  console.log("this is contacts",contacts)
 
   
   
   return (
-    <div style={sidebarStyle}>
-      {contacts.map((contact) => (
-        <div key={contact.id} onClick={() => onContactSelect(contact.id)} style={contactItemStyle}>
+    <div className="bg-neutral text-neutral-content p-5 w-64 h-screen overflow-y-auto">
+      {contacts.map((contact, index) => ( // Include index here if needed as the second parameter of the map function
+        <div key={index} onClick={() => onContactSelect(contact.id)} className="cursor-pointer py-2 my-2 border-b border-neutral-content">
           {contact.name}
         </div>
       ))}
