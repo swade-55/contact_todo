@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { deleteCompanyContacts} from './slices/contactsSlice';
 import { updateCompany, deleteCompany } from './slices/companiesSlice';
 
 const ManageCompanies = () => {
@@ -37,35 +38,32 @@ const ManageCompanies = () => {
   const handleDeleteClick = (companyId) => {
     if (window.confirm('Are you sure you want to delete this company?')) {
       dispatch(deleteCompany(companyId))
-        .catch((error) => {
-          console.error('Delete failed', error);
-        });
+      dispatch(deleteCompanyContacts(companyId))
     }
   };
 
   return (
     <div className="container mx-auto p-4">
+      <h1 className="text-6xl font-bold mb-4 text-center">Manage Companies</h1>
       <div className="flex justify-between mb-4">
-        <button onClick={handleAddCompanyClick} className="btn btn-primary">Add New Company</button>
-        <button onClick={handleAddUserClick} className="btn btn-secondary">Add New User</button>
-        <button onClick={handleBack} className="btn">Back to Home</button>
+        <button onClick={handleAddCompanyClick} className="btn btn-primary btn-lg">Add New Company</button>
+        <button onClick={handleAddUserClick} className="btn btn-secondary btn-lg">Add New User</button>
+        <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Home</button>
       </div>
       <div className="overflow-x-auto">
         <table className="table w-full">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Manager ID</th>
-              <th>Name</th>
-              <th>Actions</th>
+              <th className="text-5xl">ID</th>
+              <th className="text-5xl">Name</th>
+              <th className="text-5xl">Actions</th>
             </tr>
           </thead>
           <tbody>
             {companies.map((company) => (
               <tr key={company.id}>
-                <td>{company.id}</td>
-                <td>{company.manager_id}</td>
-                <td>
+                <td className="text-3xl">{company.id}</td>
+                <td className="text-3xl">
                   {editRowId === company.id ? (
                     <Formik
                       initialValues={{ name: company.name }}
@@ -96,7 +94,7 @@ const ManageCompanies = () => {
                   {editRowId === company.id ? (
                     <button onClick={() => handleDeleteClick(company.id)} className="btn btn-error">Delete</button>
                   ) : (
-                    <button onClick={() => setEditRowId(company.id)} className="btn btn-accent">Edit</button>
+                    <button onClick={() => setEditRowId(company.id)} className="btn btn-accent btn-lg">Edit</button>
                   )}
                 </td>
               </tr>

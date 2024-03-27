@@ -46,12 +46,13 @@ const ManageToDo = () => {
 
   return (
     <div className="flex flex-col h-screen">
+      <h1 className="text-4xl font-bold mb-4 text-center">Manage Lists and Todos</h1>
       <div className="navbar mb-2 shadow-lg bg-neutral text-neutral-content rounded-box">
         <div className="flex-none">
-          <button onClick={handleBack} className="btn btn-primary">Back to Home</button>
-          <button onClick={handleAddForm} className="btn btn-accent">Add New Todo</button>
-          <button onClick={handleAddList} className="btn btn-accent">Add New List</button>
-          <button onClick={handleAddTag} className="btn btn-accent">Add New Tag</button>
+          <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Home</button>
+          <button onClick={handleAddForm} className="btn btn-accent btn-lg">Add New Todo</button>
+          <button onClick={handleAddList} className="btn btn-accent btn-lg">Add New List</button>
+          <button onClick={handleAddTag} className="btn btn-accent btn-lg">Add New Tag</button>
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">

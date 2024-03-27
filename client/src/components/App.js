@@ -22,10 +22,10 @@ function Layout() {
     <div className="flex flex-col h-screen">
       <header className="navbar bg-base-100">
         <div className="flex-grow">
-          <div className="flex justify-end space-x-2">
-            <Link to="/manage-companies"><button className="btn btn-primary">Manage Companies</button></Link>
-            <Link to="/manage-contacts"><button className="btn btn-secondary">Manage Contacts</button></Link>
-            <Link to="/manage-todo"><button className="btn btn-accent">Manage ToDo</button></Link>
+          <div className="flex justify-between items-center w-full px-4">
+            <Link to="/manage-companies"><button className="btn btn-primary btn-lg">Manage Companies</button></Link>
+            <Link to="/manage-contacts"><button className="btn btn-secondary btn-lg">Manage Contacts</button></Link>
+            <Link to="/manage-todo"><button className="btn btn-accent btn-lg">Manage ToDo</button></Link>
           </div>
         </div>
       </header>
@@ -55,9 +55,9 @@ function HeroSection() {
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content text-center">
         <div className="max-w-md">
-          <h1 className="text-5xl font-bold">Welcome to the System</h1>
-          <p className="py-6">Manage your contacts, companies, todos, and more efficiently with our Capstone Matching System.</p>
-          <button className="btn btn-primary" onClick={openModal}>Get Started</button>
+          <h1 className="text-5xl font-bold">Welcome to the Contact Management System</h1>
+          <p className="py-6">Manage your contacts.</p>
+          <button className="btn btn-primary btn-lg" onClick={openModal}>Get Started</button>
         </div>
       </div>
 

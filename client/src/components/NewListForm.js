@@ -60,14 +60,14 @@ const NewListForm = () => {
               <ErrorMessage name="contactId" component="div" className="text-error" />
 
               <div className="form-control mt-6">
-                <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+                <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-lg">
                   Add List
                 </button>
               </div>
             </Form>
           )}
         </Formik>
-        <button onClick={handleBack} className="btn btn-ghost mt-4">
+        <button onClick={handleBack} className="btn px-10 py-3 text-lg">
           Back to Manage Todo
         </button>
       </div>

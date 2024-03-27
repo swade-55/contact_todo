@@ -16,11 +16,44 @@ class ToDoTag(db.Model, SerializerMixin):
     todo = db.relationship('ToDo', back_populates="todo_tags")
     tag = db.relationship('Tag', back_populates="todo_tags")
     
-    serialize_rules = ('-todo', '-tag',)
+    serialize_rules = ('-todo.todo_tags', '-tag.todo_tags',)
         
     def __repr__(self):
         return f'<ToDoTag todo_id={self.todo_id}, tag_id={self.tag_id}, assigned_date={self.assigned_date}>'
     
+class ToDo(db.Model,SerializerMixin):
+    __tablename__ = 'todo'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), nullable=False)
+    description = db.Column(db.String(80), nullable=True)
+    completed = db.Column(db.Boolean, nullable=False, default = False)
+    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    due_date = db.Column(db.DateTime, nullable=True) 
+    list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False)
+    
+    tags = db.relationship('Tag', secondary='todo_tag', back_populates="todos",overlaps="todo_tags,tags")
+    todo_tags = db.relationship('ToDoTag', back_populates="todo", overlaps="tags,todo_tags", cascade="all, delete")
+    list = db.relationship('ToDoList',back_populates='todos')
+    
+    
+    serialize_rules = ('-tags.todo_tags','-tags.todos', '-todo_tags', '-list',)
+    
+    def __repr__(self):
+        return '<ToDo %r>' % self.description
+
+class Tag(db.Model,SerializerMixin):
+    __tablename__ = 'tag'
+    id=db.Column(db.Integer,primary_key=True)
+    name=db.Column(db.String(80),nullable=False,unique=True)
+    
+    todos = db.relationship('ToDo', secondary='todo_tag', back_populates="tags", overlaps="todo_tags,todos")
+    todo_tags = db.relationship('ToDoTag', back_populates="tag", overlaps="todos,todo_tags", cascade="all, delete")
+    
+    serialize_rules = ('-todos', '-todo_tags',)
+    
+    def __repr__(self):
+        return '<Tag %r>' % self.name
 
 class Company(db.Model, SerializerMixin):
     __tablename__ = 'company'
@@ -63,11 +96,10 @@ class Contact(db.Model, SerializerMixin):
     status = db.Column(db.String(50),nullable=False) # hot,warm,cold
     company_id = db.Column(db.Integer,db.ForeignKey('company.id'))
     manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
-    todo_lists = db.relationship('ToDoList',backref='contact',lazy=True, cascade="all, delete")
     
+    todo_lists = db.relationship('ToDoList', back_populates='contact', lazy=True, cascade="all, delete")
     company = db.relationship('Company', back_populates="contacts")
     manager = db.relationship('User', back_populates="managed_contacts")
-    
     
     serialize_rules = ('-company.contacts','-company.manager', '-manager.managed_contacts','-manager.managed_companies', '-todo_lists.todos',)
         
@@ -82,46 +114,16 @@ class ToDoList(db.Model,SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), nullable=False)
     contact_id = db.Column(db.Integer,db.ForeignKey('contact.id'),nullable=False)
-    todos = db.relationship('ToDo', backref='list', lazy=True, cascade="all, delete")
-    
-        
+
+
+    contact = db.relationship('Contact', back_populates='todo_lists')
+    todos = db.relationship('ToDo',back_populates='list',lazy=True,cascade="all, delete")
+
     serialize_rules = ('-contact', '-todos.list',)
     
     def __repr__(self):
         return '<List %r>' % self.title
     
-class ToDo(db.Model,SerializerMixin):
-    __tablename__ = 'todo'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), nullable=False)
-    description = db.Column(db.String(80), nullable=True)
-    completed = db.Column(db.Boolean, nullable=False, default = False)
-    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    due_date = db.Column(db.DateTime, nullable=True) 
-    list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False)
-    
-    tags = db.relationship('Tag', secondary='todo_tag', back_populates="todos",overlaps="todo_tags,tags")
-    todo_tags = db.relationship('ToDoTag', back_populates="todo", overlaps="tags,todo_tags")
-    
-    
-    serialize_rules = ('-tags.todo_tags','-tags.todos', '-todo_tags', '-list',)
-    
-    def __repr__(self):
-        return '<ToDo %r>' % self.description
-
-class Tag(db.Model,SerializerMixin):
-    __tablename__ = 'tag'
-    id=db.Column(db.Integer,primary_key=True)
-    name=db.Column(db.String(80),nullable=False,unique=True)
-    
-    todos = db.relationship('ToDo', secondary='todo_tag', back_populates="tags", overlaps="todo_tags,todos")
-    todo_tags = db.relationship('ToDoTag', back_populates="tag", overlaps="todos,todo_tags")
-    
-    serialize_rules = ('-todos', '-todo_tags',)
-    
-    def __repr__(self):
-        return '<Tag %r>' % self.name
     
     
     

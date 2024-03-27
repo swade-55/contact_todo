@@ -49,7 +49,7 @@ const NewTagForm = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="btn btn-primary"
+                  className="btn btn-primary btn-lg"
                 >
                   Add Tag
                 </button>
@@ -57,7 +57,7 @@ const NewTagForm = () => {
             </Form>
           )}
         </Formik>
-        <button onClick={handleBack} className="btn btn-ghost mt-4">
+        <button onClick={handleBack} className="btn px-10 py-3 text-lg">
           Back to Manage Todo
         </button>
       </div>

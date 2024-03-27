@@ -33,7 +33,7 @@ const NewCompanyForm = () => {
   return (
     <div className="card bg-base-100 shadow-xl p-5">
       <div className="card-body">
-        <button onClick={handleBack} className="btn btn-outline btn-accent">
+        <button onClick={handleBack} className="btn px-10 py-3 text-lg">
           Back to Manage Companies
         </button>
         <h1 className="card-title my-4">Add New Company</h1>
@@ -52,7 +52,7 @@ const NewCompanyForm = () => {
               <Field id="manager_id" type="number" name="manager_id" placeholder="Manager ID" className="input input-bordered w-full" />
               <ErrorMessage name="manager_id" component="div" className="text-error" />
 
-              <button type="submit" disabled={isSubmitting} className="btn btn-primary mt-4">
+              <button type="submit" disabled={isSubmitting} className="btn btn-primary mt-4 btn-lg">
                 Submit
               </button>
             </Form>

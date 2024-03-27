@@ -47,7 +47,7 @@ const NewContactForm = () => {
   return (
     <div className="card bg-base-100 shadow-xl p-5">
       <div className="card-body">
-        <button onClick={handleBack} className="btn btn-outline btn-accent mb-4">Back to Manage Contacts</button>
+        <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Manage Contacts</button>
         <h1 className="card-title mb-4">Add New Contact</h1>
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
           {({ isSubmitting }) => (
@@ -88,7 +88,7 @@ const NewContactForm = () => {
               </Field>
               <ErrorMessage name="company_id" component="div" className="text-error mb-3" />
 
-              <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+              <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-lg">
                 Submit
               </button>
             </Form>

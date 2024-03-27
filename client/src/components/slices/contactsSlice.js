@@ -133,6 +133,12 @@ export const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
+    deleteCompanyContacts: (state, action)=>{
+      const companyId = action.payload
+      state.contacts = state.contacts.filter((contact) => contact.company_id !== companyId)
+
+
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -171,6 +177,7 @@ export const contactsSlice = createSlice({
       })
       .addCase(updateContact.fulfilled, (state, action) => {
         const index = state.contacts.findIndex(contact => contact.id === action.payload.id);
+        
         if (index !== -1) {
           // Update the contact in the array
           state.contacts[index] = action.payload;
@@ -192,5 +199,5 @@ export const contactsSlice = createSlice({
       });
   },
 });
-
+export const { deleteCompanyContacts } = contactsSlice.actions
 export default contactsSlice.reducer;

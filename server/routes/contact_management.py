@@ -87,7 +87,7 @@ def update_contact(contact_id):
         return jsonify({'message': str(e)}), 500
     
     
-@app.route('/companies/<int:contact_id>', methods=['DELETE'])
+@app.route('/contacts/<int:contact_id>', methods=['DELETE'])
 def delete_contact(contact_id):
     contact = Contact.query.get(contact_id)
     if contact:
@@ -98,3 +98,7 @@ def delete_contact(contact_id):
         return jsonify({"message": "Contact not found"}), 404
     
 
+@app.route('/api/get_contacts',methods=['GET'])
+def get_all_contacts():
+    contacts = Contact.query.all()
+    return jsonify([contact.to_dict() for contact in contacts])

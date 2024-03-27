@@ -54,7 +54,7 @@ const NewUserForm = () => {
 
   return (
     <div>
-      <button onClick={handleBack}>Back to Manage Companies</button>
+      <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Manage Companies</button>
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {({ isSubmitting }) => (
         <Form>

@@ -27,7 +27,7 @@ const NewToDoForm = () => {
     title: Yup.string()
       .required('Title is required')
       .min(3, 'Title must be at least 3 characters long'),
-    description: Yup.string(),
+    description: Yup.string('description needs to be a string'),
     dueDate: Yup.date().nullable(),
     completed: Yup.boolean(),
     listId: Yup.string()
@@ -147,12 +147,12 @@ const NewToDoForm = () => {
               </div>
 
               <div className="form-control mt-6">
-                <button type="submit" className="btn btn-primary">Add Todo</button>
+                <button type="submit" className="btn btn-primary btn-lg">Add Todo</button>
               </div>
             </Form>
           )}
         </Formik>
-        <button className="btn btn-ghost mt-4" onClick={handleBack}>Back to Manage Todo</button>
+        <button className="btn px-10 py-3 text-lg" onClick={handleBack}>Back to Manage Todo</button>
       </div>
     </div>
   );

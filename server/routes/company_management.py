@@ -66,38 +66,58 @@ def update_company(company_id):
         return jsonify({'message': str(e)}), 500
     
     
+# @app.route('/companies/<int:company_id>', methods=['DELETE'])
+# def delete_company(company_id):
+#     try:
+#         company = Company.query.get(company_id)
+#         if not company:
+#             return jsonify({"message": "Company not found"}), 404
+
+#         # Get all contacts associated with the company
+#         contacts = Contact.query.filter_by(company_id=company_id).all()
+
+#         for contact in contacts:
+#             # For each contact, get all associated ToDoLists
+#             todo_lists = ToDoList.query.filter_by(contact_id=contact.id).all()
+
+#             for todo_list in todo_lists:
+#                 # For each ToDoList, delete all associated ToDos
+#                 ToDo.query.filter_by(list_id=todo_list.id).delete()
+
+#                 # Now it's safe to delete the ToDoList
+#                 db.session.delete(todo_list)
+
+#             # Once all ToDoLists and ToDos for a contact are deleted, delete the contact itself
+#             db.session.delete(contact)
+
+#         # After all contacts (and their associated ToDoLists and ToDos) are deleted, delete the company
+#         db.session.delete(company)
+#         db.session.commit()
+
+#         return jsonify({"message": "Company and all associated contacts, ToDoLists, and ToDos deleted"}), 200
+#     except Exception as e:
+#         db.session.rollback()  # Ensure transaction is rolled back in case of error
+#         return jsonify({"message": str(e)}), 500
+
 @app.route('/companies/<int:company_id>', methods=['DELETE'])
 def delete_company(company_id):
     try:
         company = Company.query.get(company_id)
         if not company:
             return jsonify({"message": "Company not found"}), 404
-
-        # Get all contacts associated with the company
-        contacts = Contact.query.filter_by(company_id=company_id).all()
-
-        for contact in contacts:
-            # For each contact, get all associated ToDoLists
-            todo_lists = ToDoList.query.filter_by(contact_id=contact.id).all()
-
-            for todo_list in todo_lists:
-                # For each ToDoList, delete all associated ToDos
-                ToDo.query.filter_by(list_id=todo_list.id).delete()
-
-                # Now it's safe to delete the ToDoList
-                db.session.delete(todo_list)
-
-            # Once all ToDoLists and ToDos for a contact are deleted, delete the contact itself
-            db.session.delete(contact)
-
-        # After all contacts (and their associated ToDoLists and ToDos) are deleted, delete the company
+        db.session.flush() 
         db.session.delete(company)
         db.session.commit()
 
-        return jsonify({"message": "Company and all associated contacts, ToDoLists, and ToDos deleted"}), 200
+        return jsonify({"message": "Company and all associated contacts, ToDoLists, and ToDos deleted successfully"}), 200
     except Exception as e:
-        db.session.rollback()  # Ensure transaction is rolled back in case of error
+        db.session.rollback()  # Roll back in case of error
         return jsonify({"message": str(e)}), 500
+    
 
+@app.route('/api/get_companies',methods=['GET'])
+def get_all_companies():
+    companies = Company.query.all()
+    return jsonify([company.to_dict() for company in companies])
         
     

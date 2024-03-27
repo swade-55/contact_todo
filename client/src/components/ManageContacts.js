@@ -53,9 +53,10 @@ const ManageContacts = () => {
 
   return (
     <div className="container mx-auto p-4">
+    <h1 className="text-6xl font-bold mb-4 text-center">Manage Contacts</h1>
       <div className="flex gap-4 mb-4">
-      <button onClick={handleAddContactClick} className="btn btn-primary">Add New Contact</button>
-      <button onClick={handleBack} className="btn">Back to Home</button>
+      <button onClick={handleAddContactClick} className="btn btn-primary btn-lg">Add New Contact</button>
+      <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Home</button>
       <select value={selectedCompanyId} onChange={handleCompanyChange} className="select select-bordered">
         <option value="">Select a Company</option>
         {companies.map((company) => (
@@ -69,19 +70,19 @@ const ManageContacts = () => {
       <table className="table w-full">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Company</th>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th className="text-5xl">ID</th>
+            <th className="text-5xl">Company</th>
+            <th className="text-5xl">Name</th>
+            <th className="text-5xl">Status</th>
+            <th className="text-5xl">Actions</th>
           </tr>
         </thead>
         <tbody>
         {filteredContacts.map((contact) => (
             <tr key={contact.id}>
-              <td>{contact.id}</td>
-              <td>Company Name: {contact.company?.name ?? 'No Company'}</td>
-              <td>
+              <td className="text-3xl">{contact.id}</td>
+              <td className="text-3xl">{contact.company?.name ?? 'No Company'}</td>
+              <td className="text-3xl">
                 {editRowId === contact.id ? (
                   <Formik
                     initialValues={{ name: contact.name, status: contact.status }}
@@ -115,9 +116,9 @@ const ManageContacts = () => {
                   contact.name
                 )}
               </td>
-              <td>
-                {contact.status}
-              </td>
+              <td className={`text-3xl ${contact.status === 'hot' ? 'text-red-500' : contact.status === 'warm' ? 'text-yellow-500' : 'text-blue-500'}`}>
+      {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
+    </td>
               <td>
               <div className="flex gap-2">
                 {editRowId === contact.id ? (
@@ -126,7 +127,7 @@ const ManageContacts = () => {
                     <button onClick={handleCancelClick}>Cancel</button>
                   </>
                 ) : (
-                  <button onClick={() => setEditRowId(contact.id)} className="btn btn-info btn-sm">Edit</button>
+                  <button onClick={() => setEditRowId(contact.id)} className="btn btn-info btn-lg">Edit</button>
                 )}
                 </div>
               </td>
