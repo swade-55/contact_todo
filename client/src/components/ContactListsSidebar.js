@@ -9,8 +9,8 @@ const ContactListsSidebar = ({ onContactSelect }) => {
   
   
   return (
-    <div className="bg-neutral text-neutral-content p-5 w-64 h-screen overflow-y-auto">
-      {contacts.map((contact, index) => ( // Include index here if needed as the second parameter of the map function
+    <div className="bg-neutral text-neutral-content p-5 w-64 overflow-y-auto h-full">
+      {contacts.map((contact, index) => ( 
         <div key={index} onClick={() => onContactSelect(contact.id)} className="cursor-pointer py-2 my-2 border-b border-neutral-content">
           {contact.name}
         </div>
