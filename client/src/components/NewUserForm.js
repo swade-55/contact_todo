@@ -11,10 +11,6 @@ const NewUserForm = () => {
     password: '',
   };
 
-  const handleBack=()=>{
-    navigate('/manage-companies')
-  }
-
   const validationSchema = Yup.object().shape({
     username: Yup.string().required('Username is required'),
     email: Yup.string().email('Invalid email').required('Email is required'),
@@ -41,6 +37,7 @@ const NewUserForm = () => {
     .then(data => {
         console.log('Success:', data);
         resetForm();
+        navigate('/login');
     })
     .catch(error => {
         console.error('Error:', error);
@@ -52,29 +49,37 @@ const NewUserForm = () => {
 };
 
 
-  return (
-    <div>
-      <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Manage Companies</button>
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {({ isSubmitting }) => (
-        <Form>
-          <Field type="text" name="username" placeholder="Username" />
-          <ErrorMessage name="username" component="div" />
+return (
+  <div className="card bg-base-100 shadow-xl p-5">
+    <div className="card-body">
+      <button onClick={() => navigate('/')} className="btn btn-secondary mb-4">Back to Home</button>
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+        {({ isSubmitting }) => (
+          <Form>
+            <div className="form-control">
+              <Field name="username" placeholder="Username" className="input input-bordered" />
+              <ErrorMessage name="username" component="div" className="text-error" />
+            </div>
 
-          <Field type="email" name="email" placeholder="Email" />
-          <ErrorMessage name="email" component="div" />
+            <div className="form-control">
+              <Field name="email" type="email" placeholder="Email" className="input input-bordered" />
+              <ErrorMessage name="email" component="div" className="text-error" />
+            </div>
 
-          <Field type="password" name="password" placeholder="Password" />
-          <ErrorMessage name="password" component="div" />
+            <div className="form-control">
+              <Field name="password" type="password" placeholder="Password" className="input input-bordered" />
+              <ErrorMessage name="password" component="div" className="text-error" />
+            </div>
 
-          <button type="submit" disabled={isSubmitting}>
-            Create User
-          </button>
-        </Form>
-      )}
-    </Formik>
+            <button type="submit" disabled={isSubmitting} className="btn btn-primary mt-4">
+              Create User
+            </button>
+          </Form>
+        )}
+      </Formik>
     </div>
-  );
+  </div>
+);
 };
 
 export default NewUserForm;

@@ -1,23 +1,38 @@
-import React, {useEffect, useState} from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Navigate, BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import ManageContacts from './ManageContacts';
 import ManageCompanies from './ManageCompanies';
-import {fetchCompanies} from './slices/companiesSlice'
-import {fetchAllTags} from './slices/tagsSlice'
+import { fetchCompanies } from './slices/companiesSlice'
+import { fetchAllContacts } from './slices/contactsSlice'
+import { fetchAllTags } from './slices/tagsSlice'
 import ManageToDo from './ManageToDo';
-import {useDispatch} from 'react-redux'
+import { useDispatch } from 'react-redux'
 import NewCompanyForm from './NewCompanyForm'
 import NewContactForm from './NewContactForm'
 import NewTodoForm from './NewTodoForm'
 import NewTagForm from './NewTagForm'
 import NewUserForm from './NewUserForm'
 import NewListForm from './NewListForm'
-import {fetchAllContacts} from './slices/contactsSlice'
-
+import LoginForm from './LoginForm';
+import ProtectedRoute from './ProtectedRoute';
+import { checkSession,logoutUser } from './slices/authSlice';
+import { useSelector } from 'react-redux';
+import LandingPage from './LandingPage';
 
 
 
 function Layout() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logoutUser())
+      .then(() => {
+        console.log('Logout successful');
+        navigate('/login'); 
+      })
+      .catch((error) => console.error('Logout failed', error));
+  };
+  
   return (
     <div className="flex flex-col h-screen">
       <header className="navbar bg-base-100">
@@ -26,6 +41,14 @@ function Layout() {
             <Link to="/manage-companies"><button className="btn btn-primary btn-lg">Manage Companies</button></Link>
             <Link to="/manage-contacts"><button className="btn btn-secondary btn-lg">Manage Contacts</button></Link>
             <Link to="/manage-todo"><button className="btn btn-accent btn-lg">Manage ToDo</button></Link>
+            {!localStorage.getItem('token') ? (
+              <>
+                <Link to="/login"><button className="btn">Login</button></Link>
+                <Link to="/signup"><button className="btn">Signup</button></Link>
+              </>
+            ) : (
+              <button className="btn" onClick={handleLogout}>Logout</button>
+            )}
           </div>
         </div>
       </header>
@@ -85,34 +108,58 @@ function HeroSection() {
 
 
 function App() {
-
+  //add local state to manage loading. load h1 tag that says loading.
+  //add local state to manage loading. Load h1 tag that says 'loading'
+   
   const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
-    //userId will act as a placeholder until feature is developed to create users via sign up form(unfinished stretch goals)
-    const userId = 1;
-    dispatch(fetchCompanies(userId));
-    dispatch(fetchAllContacts(userId));
-    dispatch(fetchAllTags());
+    dispatch(checkSession())
+      .then((action) => {
+        if (action.type.endsWith('fulfilled')) {
+          // debugger
+          const userId = action.payload.user_id;
+          dispatch(fetchCompanies(userId));
+          dispatch(fetchAllContacts(userId));
+          dispatch(fetchAllTags());
+        }
+      });
   }, [dispatch]);
-  return (
-    <Router>
-      <div className="flex flex-col h-screen">
-      <Routes>
-      <Route path="/" element={<Layout />} />
-        <Route path="/manage-companies" element={<ManageCompanies />} />
-        <Route path="/manage-contacts" element={<ManageContacts />} />
-        <Route path="/manage-todo" element={<ManageToDo />} />
-        <Route path = "/add-company" element={<NewCompanyForm/>} />
-        <Route path = "/add-contact" element={<NewContactForm/>} />
-        <Route path = "/add-user" element={<NewUserForm/>} />
-        <Route path = "/add-todo" element={<NewTodoForm/>} />
-        <Route path = "/add-list" element={<NewListForm/>} />
-        <Route path = "/add-tag" element={<NewTagForm/>} />
-      </Routes>
-      </div>
-    </Router>
-  );
-}
+  
 
+  const token = localStorage.getItem('token');
+
+
+return (
+  <Router>
+    <div className="flex flex-col h-screen">
+      <Routes>
+        {auth.isAuthenticated ? (
+          <>
+            <Route path="/layout" element={token ? <Layout /> : <Navigate replace to="/login" />} />
+            <Route path="/add-todo" element={<ProtectedRoute><NewTodoForm /></ProtectedRoute>} />
+            <Route path="/add-list" element={<ProtectedRoute><NewListForm /></ProtectedRoute>} />
+            <Route path="/add-tag" element={<ProtectedRoute><NewTagForm /></ProtectedRoute>} />
+            <Route path="/manage-companies" element={<ProtectedRoute><ManageCompanies /></ProtectedRoute>} />
+            <Route path="/manage-contacts" element={<ProtectedRoute><ManageContacts /></ProtectedRoute>} />
+            <Route path="/manage-todo" element={<ProtectedRoute><ManageToDo /></ProtectedRoute>} />
+            <Route path="/add-company" element={<ProtectedRoute><NewCompanyForm /></ProtectedRoute>} />
+            <Route path="/add-contact" element={<ProtectedRoute><NewContactForm /></ProtectedRoute>} />
+          </>
+        ) : (
+          <>
+            {/* Public routes go here */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/signup" element={<NewUserForm />} />
+            {/* Redirect to login if no other routes match and user is not logged in */}
+            <Route path="*" element={<Navigate replace to="/" />} />
+          </>
+        )}
+      </Routes>
+    </div>
+  </Router>
+);
+}
 export default App;

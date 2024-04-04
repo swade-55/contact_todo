@@ -27,9 +27,6 @@ const ManageCompanies = () => {
     navigate('/add-company');
   };
 
-  const handleAddUserClick = () => {
-    navigate('/add-user');
-  };
 
   const handleCancelClick = () => {
     setEditRowId(null);
@@ -47,7 +44,6 @@ const ManageCompanies = () => {
       <h1 className="text-6xl font-bold mb-4 text-center">Manage Companies</h1>
       <div className="flex justify-between mb-4">
         <button onClick={handleAddCompanyClick} className="btn btn-primary btn-lg">Add New Company</button>
-        <button onClick={handleAddUserClick} className="btn btn-secondary btn-lg">Add New User</button>
         <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Home</button>
       </div>
       <div className="overflow-x-auto">

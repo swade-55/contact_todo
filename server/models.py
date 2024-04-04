@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy_serializer import SerializerMixin
+from werkzeug.security import check_password_hash
 
 
 db = SQLAlchemy()
@@ -82,6 +83,9 @@ class User(db.Model,SerializerMixin):
     #Relationships
     managed_companies = db.relationship('Company', back_populates="manager")
     managed_contacts = db.relationship('Contact', back_populates="manager")
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
     
     serialize_rules = ('-managed_companies', '-managed_contacts', '-password_hash',)
     def __repr__(self):

@@ -1,8 +1,8 @@
-from flask import jsonify, request
+from flask import jsonify, request, session
 from models import db, User,Company
 from config import app
-from werkzeug.security import generate_password_hash
-from sqlalchemy.sql import func
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import create_access_token
 
 
 @app.route('/users', methods=['POST'])
@@ -12,22 +12,41 @@ def create_user():
     email = data.get('email')
     password = data.get('password')
 
-    # Check if user already exists
     if User.query.filter((User.username == username) | (User.email == email)).first():
         return jsonify({'message': 'User already exists'}), 409
 
-    # Hash password
     hashed_password = generate_password_hash(password)
 
     new_user = User(username=username, email=email, password_hash=hashed_password)
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify(new_user.to_dict()), 201
+    # return jsonify(new_user.to_dict()), 201
+    return jsonify({"message": "Session valid", "user_id": new_user.id}), 201
 
 
-#Challenge 4: Posts Ordered by Comment Count
-@app.route('/api/users_ordered_by_companies',methods=['GET'])
-def posts_comments():
-  users = User.query.outerjoin(User.managed_companies).group_by(User.id).order_by(func.count(Company.id).desc()).all()
-  return jsonify([user.to_dict() for user in users])
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    user = User.query.filter_by(username=username).first()
+    if user and user.check_password(password):
+        session['user_id'] = user.id
+        return jsonify({"message": "Login successful", "user_id": user.id}), 200
+    else:
+        return jsonify({"message": "Invalid username or password"}), 401
+
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return jsonify({"message": "Logged out successfully"}), 200
+
+
+@app.route('/check_session', methods=['GET'])
+def check_session():
+    user_id = session.get('user_id')
+    if user_id:
+        return jsonify({"message": "Session valid", "user_id": user_id}), 200
+    else:
+        return jsonify({"message": "Session invalid"}), 401

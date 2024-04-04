@@ -9,12 +9,12 @@ const NewContactForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const companies = useSelector((state) => state.companies.companies);
+  const loggedInUserId = useSelector((state) => state.auth.user?.id);
 
   const initialValues = {
     name: '',
     status: '',
     company_id: '',
-    manager_id: '',
   };
 
   const validationSchema = Yup.object().shape({
@@ -28,16 +28,17 @@ const NewContactForm = () => {
       .required('Company ID is required')
       .positive('Company ID must be positive')
       .integer('Company ID must be an integer'),
-    manager_id: Yup.number()
-      .required('Manager ID is required')
-      .positive('Manager ID must be positive')
-      .integer('Manager ID must be an integer'),
   });
 
   const onSubmit = (values, { resetForm }) => {
-    dispatch(addContact(values));
-    resetForm();
-    navigate('/manage-contacts')
+    if (loggedInUserId) {
+      const companyData = { ...values, manager_id: loggedInUserId };
+      dispatch(addContact(companyData));
+      resetForm();
+      navigate('/manage-companies');
+    } else {
+      console.error("User ID is not available");
+    }
   };
 
   const handleBack = () => {
@@ -68,12 +69,6 @@ const NewContactForm = () => {
                 <option value="Warm">Warm</option>
               </Field>
               <ErrorMessage name="status" component="div" className="text-error mb-3" />
-
-              <label htmlFor="manager_id" className="label">
-                Manager ID
-              </label>
-              <Field id="manager_id" type="number" name="manager_id" placeholder="Manager ID" className="input input-bordered w-full mb-3" />
-              <ErrorMessage name="manager_id" component="div" className="text-error mb-3" />
 
               <label htmlFor="company_id" className="label">
                 Company

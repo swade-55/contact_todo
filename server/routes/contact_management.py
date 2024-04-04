@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from models import db, Contact, ToDoList, ToDo, User
 from config import app
+from sqlalchemy import func
 
 
 
@@ -25,7 +26,7 @@ def get_all_contacts_and_lists_tags(user_id):
         # Retrieve all contacts
         contacts = Contact.query.filter_by(manager_id=user_id).all()
         if not contacts:
-            return jsonify({'message': 'No contacts found'}), 404
+            return jsonify({'message': 'No contacts found'}), 200
         
         contacts_data = []
         for contact in contacts:
@@ -98,7 +99,12 @@ def delete_contact(contact_id):
         return jsonify({"message": "Contact not found"}), 404
     
 
-@app.route('/api/get_contacts',methods=['GET'])
-def get_all_contacts():
-    contacts = Contact.query.all()
-    return jsonify([contact.to_dict() for contact in contacts])
+@app.route('/todo_todo_tags/<int:n>',methods=['GET'])
+def get_todo_tags(n):
+    todos = ToDo.query.all()
+    new_todos = []
+    for todo in todos:
+        if len(todo.tags) >= n:
+            new_todos.append(todo)
+
+    return jsonify([todo.to_dict() for todo in new_todos])
