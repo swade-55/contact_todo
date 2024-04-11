@@ -62,6 +62,7 @@ class Company(db.Model, SerializerMixin):
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String(100),nullable=False)
     manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+    image_path = db.Column(db.String(255), nullable=True) 
     
     #Relationships
     manager = db.relationship('User', back_populates="managed_companies")
@@ -98,8 +99,12 @@ class Contact(db.Model, SerializerMixin):
     name = db.Column(db.String(100),nullable=False)
     last_contact_date = db.Column(db.DateTime,nullable=True)
     status = db.Column(db.String(50),nullable=False) # hot,warm,cold
+    job_title = db.Column(db.String(100),nullable=True)
+    email = db.Column(db.String(120),nullable=True)
+    phone = db.Column(db.String(20),nullable=True)
     company_id = db.Column(db.Integer,db.ForeignKey('company.id'))
     manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+
     
     todo_lists = db.relationship('ToDoList', back_populates='contact', lazy=True, cascade="all, delete")
     company = db.relationship('Company', back_populates="contacts")

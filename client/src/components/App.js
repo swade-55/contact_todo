@@ -18,30 +18,30 @@ import ProtectedRoute from './ProtectedRoute';
 import { checkSession,logoutUser } from './slices/authSlice';
 import { useSelector } from 'react-redux';
 import LandingPage from './LandingPage';
+import { BrowserRouter } from 'react-router-dom';
+import Breadcrumbs from './Breadcrumbs';
 
 
 
 function Layout() {
+  const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleLogout = () => {
-    dispatch(logoutUser())
-      .then(() => {
-        console.log('Logout successful');
-        navigate('/login'); 
-      })
-      .catch((error) => console.error('Logout failed', error));
+    dispatch(logoutUser()).then(() => {
+      console.log('Logout successful');
+      // Assuming your state changes upon logout, triggering a re-render
+    }).catch((error) => console.error('Logout failed', error));
   };
-  
   return (
     <div className="flex flex-col h-screen">
       <header className="navbar bg-base-100">
         <div className="flex-grow">
           <div className="flex justify-between items-center w-full px-4">
-            <Link to="/manage-companies"><button className="btn btn-primary btn-lg">Manage Companies</button></Link>
-            <Link to="/manage-contacts"><button className="btn btn-secondary btn-lg">Manage Contacts</button></Link>
-            <Link to="/manage-todo"><button className="btn btn-accent btn-lg">Manage ToDo</button></Link>
-            {!localStorage.getItem('token') ? (
+            <Link to="/manage-companies"><button className="btn btn-primary btn-lg">Manage All Companies</button></Link>
+            <Link to="/manage-contacts"><button className="btn btn-secondary btn-lg">Manage All Contacts</button></Link>
+            <Link to="/manage-todo"><button className="btn btn-accent btn-lg">Manage All ToDo</button></Link>
+            {!auth.isAuthenticated ? (
               <>
                 <Link to="/login"><button className="btn">Login</button></Link>
                 <Link to="/signup"><button className="btn">Signup</button></Link>
@@ -108,9 +108,6 @@ function HeroSection() {
 
 
 function App() {
-  //add local state to manage loading. load h1 tag that says loading.
-  //add local state to manage loading. Load h1 tag that says 'loading'
-   
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
 
@@ -118,8 +115,8 @@ function App() {
     dispatch(checkSession())
       .then((action) => {
         if (action.type.endsWith('fulfilled')) {
-          // debugger
           const userId = action.payload.user_id;
+          console.log('useriD', userId)
           dispatch(fetchCompanies(userId));
           dispatch(fetchAllContacts(userId));
           dispatch(fetchAllTags());
@@ -127,39 +124,38 @@ function App() {
       });
   }, [dispatch]);
   
-
-  const token = localStorage.getItem('token');
-
-
-return (
-  <Router>
-    <div className="flex flex-col h-screen">
+  return (
+    <BrowserRouter>
+      <Breadcrumbs />
       <Routes>
-        {auth.isAuthenticated ? (
+        {/* Public Routes */}
+        {!auth.isAuthenticated ? (
           <>
-            <Route path="/layout" element={token ? <Layout /> : <Navigate replace to="/login" />} />
-            <Route path="/add-todo" element={<ProtectedRoute><NewTodoForm /></ProtectedRoute>} />
-            <Route path="/add-list" element={<ProtectedRoute><NewListForm /></ProtectedRoute>} />
-            <Route path="/add-tag" element={<ProtectedRoute><NewTagForm /></ProtectedRoute>} />
-            <Route path="/manage-companies" element={<ProtectedRoute><ManageCompanies /></ProtectedRoute>} />
-            <Route path="/manage-contacts" element={<ProtectedRoute><ManageContacts /></ProtectedRoute>} />
-            <Route path="/manage-todo" element={<ProtectedRoute><ManageToDo /></ProtectedRoute>} />
-            <Route path="/add-company" element={<ProtectedRoute><NewCompanyForm /></ProtectedRoute>} />
-            <Route path="/add-contact" element={<ProtectedRoute><NewContactForm /></ProtectedRoute>} />
-          </>
-        ) : (
-          <>
-            {/* Public routes go here */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<NewUserForm />} />
-            {/* Redirect to login if no other routes match and user is not logged in */}
+            {/* Redirect all other paths to "/" if not authenticated */}
             <Route path="*" element={<Navigate replace to="/" />} />
+          </>
+        ) : (
+          /* Protected Routes for Authenticated Users */
+          
+          <>
+            <Route path="/layout" element={<Layout />} />
+            <Route path="/add-todo" element={<NewTodoForm />} />
+            <Route path="/add-list" element={<NewListForm />} />
+            <Route path="/add-tag" element={<NewTagForm />} />
+            <Route path="/manage-companies" element={<ManageCompanies />} />
+            <Route path="/manage-contacts" element={<ManageContacts />} />
+            <Route path="/manage-todo" element={<ManageToDo />} />
+            <Route path="/add-company" element={<NewCompanyForm />} />
+            <Route path="/add-contact" element={<NewContactForm />} />
+            {/* Redirect unhandled paths back to "/layout" for authenticated users */}
+            <Route path="*" element={<Navigate replace to="/layout" />} />
           </>
         )}
       </Routes>
-    </div>
-  </Router>
-);
-}
-export default App;
+      
+    </BrowserRouter>
+  );
+}export default App;

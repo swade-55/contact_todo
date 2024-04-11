@@ -58,7 +58,7 @@ const authSlice = createSlice({
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isAuthenticated = true;
-        state.user = action.payload.user; 
+        state.user = action.payload.user_id; 
         state.isLoading = false;
         state.error = null;
       })
@@ -71,7 +71,8 @@ const authSlice = createSlice({
       })
       .addCase(checkSession.fulfilled, (state, action) => {
         state.isAuthenticated = action.payload.isAuthenticated;
-        state.user = action.payload.user;
+        // Adjusting this to correctly store the user information
+        state.user = { id: action.payload.user_id };
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuthenticated = false;

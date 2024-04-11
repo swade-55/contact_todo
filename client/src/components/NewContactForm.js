@@ -9,12 +9,15 @@ const NewContactForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const companies = useSelector((state) => state.companies.companies);
-  const loggedInUserId = useSelector((state) => state.auth.user?.id);
-
+  const loggedInUserId = useSelector((state) => state.auth.user);
+  console.log(loggedInUserId)
   const initialValues = {
     name: '',
     status: '',
     company_id: '',
+    job_title: '',
+    phone: '',
+    email: '',
   };
 
   const validationSchema = Yup.object().shape({
@@ -28,6 +31,14 @@ const NewContactForm = () => {
       .required('Company ID is required')
       .positive('Company ID must be positive')
       .integer('Company ID must be an integer'),
+    job_title: Yup.number()
+      .required('Job Title is required'),
+    phone: Yup.string()
+      .required('Phone number is required')
+      .matches(/^\d{10}$/, 'Phone number must be 10 digits'),
+    email: Yup.string()
+      .required('Email is required')
+      .email('Invalid email format'),
   });
 
   const onSubmit = (values, { resetForm }) => {
@@ -35,7 +46,7 @@ const NewContactForm = () => {
       const companyData = { ...values, manager_id: loggedInUserId };
       dispatch(addContact(companyData));
       resetForm();
-      navigate('/manage-companies');
+      navigate('/manage-contacts');
     } else {
       console.error("User ID is not available");
     }
@@ -82,6 +93,17 @@ const NewContactForm = () => {
                 ))}
               </Field>
               <ErrorMessage name="company_id" component="div" className="text-error mb-3" />
+              <label htmlFor="job_title" className="label">Job Title</label>
+              <Field id="job_title" name="job_title" placeholder="Job Title" className="input input-bordered w-full mb-3" />
+              <ErrorMessage name="job_title" component="div" className="text-error mb-3" />
+
+              <label htmlFor="phone" className="label">Phone</label>
+              <Field id="phone" name="phone" placeholder="Phone Number" className="input input-bordered w-full mb-3" />
+              <ErrorMessage name="phone" component="div" className="text-error mb-3" />
+
+              <label htmlFor="email" className="label">Email</label>
+              <Field id="email" name="email" placeholder="Email Address" className="input input-bordered w-full mb-3" />
+              <ErrorMessage name="email" component="div" className="text-error mb-3" />
 
               <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-lg">
                 Submit

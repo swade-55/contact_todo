@@ -7,19 +7,25 @@ import { updateContact, deleteContact } from './slices/contactsSlice';
 
 const ManageContacts = () => {
   const contacts = useSelector((state) => state.contacts.contacts);
+  console.log('this is contacts', contacts)
   const companies = useSelector(state=>state.companies.companies)
+  console.log('this is companies', companies)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [editRowId, setEditRowId] = useState(null);
   const [selectedCompanyId,setSelectedCompanyId] = useState('')
 
   const contactSchema = Yup.object().shape({
-    name: Yup.string()
-      .required('Name is required')
-      .min(2, 'Name must be at least 2 characters')
-      .max(50, 'Name must not exceed 50 characters'),
-    status: Yup.string()
-      .required('Status is required'),
+    // ... other validations ...
+    job_title: Yup.string()
+      .max(100, 'Job title must not exceed 100 characters'),
+    phone: Yup.string()
+      .matches(/^[0-9]+$/, "Phone number is not valid")
+      .min(10, 'Phone number must be at least 10 digits')
+      .max(15, 'Phone number must not exceed 15 digits'),
+    email: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
   });
 
   const handleBack = () => {
@@ -72,10 +78,13 @@ const ManageContacts = () => {
           <tr>
             <th className="text-5xl">ID</th>
             <th className="text-5xl">Company</th>
-            <th className="text-5xl">Name</th>
-            <th className="text-5xl">Status</th>
-            <th className="text-5xl">Actions</th>
-          </tr>
+              <th className="text-5xl">Name</th>
+              <th className="text-5xl">Status</th>
+              <th className="text-5xl">Job Title</th> 
+              <th className="text-5xl">Phone</th>
+              <th className="text-5xl">Email</th> 
+              <th className="text-5xl">Actions</th>
+            </tr>
         </thead>
         <tbody>
         {filteredContacts.map((contact) => (
@@ -85,7 +94,13 @@ const ManageContacts = () => {
               <td className="text-3xl">
                 {editRowId === contact.id ? (
                   <Formik
-                    initialValues={{ name: contact.name, status: contact.status }}
+                  initialValues={{
+                    name: contact.name,
+                    status: contact.status,
+                    job_title: contact.job_title || '',
+                    phone: contact.phone || '',
+                    email: contact.email || '',
+                  }}
                     validationSchema={contactSchema}
                     onSubmit={(values, { setSubmitting }) => {
                       dispatch(updateContact({ ...contact, ...values }))
@@ -96,8 +111,11 @@ const ManageContacts = () => {
                   >
                     {({ isSubmitting }) => (
                       <Form>
-                        <Field name="name" type="text" className="input input-bordered" />
-                        <ErrorMessage name="name" component="div" className="text-error"/>
+                      <td className="text-3xl">
+              <Field name="name" type="text" className="input input-bordered" />
+              <ErrorMessage name="name" component="div" className="text-error"/>
+            </td>
+                      <td className="text-3xl">
                         <Field as="select" name="status" className="select select-bordered">
                           <option value="">Select Status</option>
                           <option value="hot">Hot</option>
@@ -105,20 +123,38 @@ const ManageContacts = () => {
                           <option value="cold">Cold</option>
                         </Field>
                         <ErrorMessage name="status" component="div" className="text-error"/>
-                        <div className="flex gap-2 mt-2">
+                      </td>
+                      <td className="text-3xl">
+                        <Field name="job_title" type="text" className="input input-bordered" />
+                        <ErrorMessage name="job_title" component="div" className="text-error"/>
+                      </td>
+                      <td className="text-3xl">
+                        <Field name="phone" type="text" className="input input-bordered" />
+                        <ErrorMessage name="phone" component="div" className="text-error"/>
+                      </td>
+                      <td className="text-3xl">
+                        <Field name="email" type="email" className="input input-bordered" />
+                        <ErrorMessage name="email" component="div" className="text-error"/>
+                      </td>
+                      <td>
                         <button type="submit" disabled={isSubmitting}>Save</button>
                         <button type="button" onClick={handleCancelClick}>Cancel</button>
-                        </div>
-                      </Form>
-                    )}
-                  </Formik>
-                ) : (
-                  contact.name
-                )}
-              </td>
-              <td className={`text-3xl ${contact.status === 'hot' ? 'text-red-500' : contact.status === 'warm' ? 'text-yellow-500' : 'text-blue-500'}`}>
-      {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
+                      </td>
+                    </Form>
+                  )}
+                </Formik>
+              ) : (
+                <>
+                  {contact.name}
+                </>
+              )}
+            </td>
+            <td className={`text-3xl ${contact.status === 'hot' ? 'text-red-500' : contact.status === 'warm' ? 'text-yellow-500' : 'text-blue-500'}`}>
+              {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
     </td>
+    <td>{contact.job_title || 'N/A'}</td> {/* Display job title */}
+                <td>{contact.phone || 'N/A'}</td> {/* Display phone */}
+                <td>{contact.email || 'N/A'}</td> {/* Display email */}
               <td>
               <div className="flex gap-2">
                 {editRowId === contact.id ? (

@@ -52,6 +52,7 @@ const ManageCompanies = () => {
             <tr>
               <th className="text-5xl">ID</th>
               <th className="text-5xl">Name</th>
+              <th className="text-5xl">Image</th> 
               <th className="text-5xl">Actions</th>
             </tr>
           </thead>
@@ -86,7 +87,15 @@ const ManageCompanies = () => {
                     company.name
                   )}
                 </td>
+                <td className="text-3xl">
+                  {company.image_path ? (
+                    <img src={company.image_path} alt={`${company.name} logo`} style={{ width: '100px', height: 'auto' }} />
+                  ) : (
+                    'No Image' 
+                  )}
+                </td>
                 <td>
+                  {/* Action buttons */}
                   {editRowId === company.id ? (
                     <button onClick={() => handleDeleteClick(company.id)} className="btn btn-error">Delete</button>
                   ) : (

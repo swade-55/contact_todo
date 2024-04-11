@@ -21,25 +21,23 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
     return data;
   });
 
-  export const addCompany = createAsyncThunk('companies/addCompany', async (companyData, { rejectWithValue }) => {
+  export const addCompany = createAsyncThunk('companies/addCompany', async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch('/companies', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(companyData),
+        body: formData, // Directly passing FormData object
       });
   
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
   
-      return response.json();
+      return await response.json();
     } catch (error) {
       return rejectWithValue(error.message);
     }
   });
+  
 
   export const deleteCompany = createAsyncThunk('companies/deleteCompany', async (companyId, { rejectWithValue }) => {
     try {
@@ -58,21 +56,18 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
   });
   
   
-  export const updateCompany = createAsyncThunk('companies/updateCompany', async (companyData, { rejectWithValue }) => {
+  export const updateCompany = createAsyncThunk('companies/updateCompany', async ({id, formData}, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/companies/${companyData.id}`, {
+      const response = await fetch(`/companies/${id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(companyData),
+        body: formData, // Now correctly using the formData passed in the payload
       });
   
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
   
-      return response.json();
+      return await response.json();
     } catch (error) {
       return rejectWithValue(error.message);
     }

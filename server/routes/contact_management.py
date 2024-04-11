@@ -12,7 +12,10 @@ def add_contact():
         name=data.get('name'),
         status = data.get('status'),
         manager_id = data.get('manager_id'),
-        company_id=data.get('company_id')
+        company_id=data.get('company_id'),
+        phone = data.get('phone'),
+        email = data.get('email'),
+        job_title = data.get('job_title'),
     )
     db.session.add(new_contact)
     db.session.commit()
@@ -25,8 +28,8 @@ def get_all_contacts_and_lists_tags(user_id):
     try:
         # Retrieve all contacts
         contacts = Contact.query.filter_by(manager_id=user_id).all()
-        if not contacts:
-            return jsonify({'message': 'No contacts found'}), 200
+        # if not contacts:
+        #     return jsonify({'message': 'No contacts found'}), 200
         
         contacts_data = []
         for contact in contacts:
@@ -69,17 +72,23 @@ def update_contact(contact_id):
             return jsonify({'message': 'Contact not found'}), 404
 
         data = request.json
+        
         if 'name' in data:
-            contact.name = data['name']
-            
+            contact.name = data['name']  
         if 'status' in data:
             contact.status = data['status']
-        
         if 'manager_id' in data:
             manager = User.query.get(data['manager_id'])
             if not manager:
                 return jsonify({'message': 'Manager not found'}), 404
             contact.manager_id = data['manager_id']
+        if 'job_title' in data:
+            contact.job_title = data['job_title']
+        if 'phone' in data:
+            contact.phone = data['phone']
+        if 'email' in data:
+            contact.email = data['email']
+        
         
         db.session.commit()
         return jsonify(contact.to_dict()), 200
