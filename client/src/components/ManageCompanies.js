@@ -40,27 +40,27 @@ const ManageCompanies = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-6xl font-bold mb-4 text-center">Manage Companies</h1>
-      <div className="flex justify-between mb-4">
-        <button onClick={handleAddCompanyClick} className="btn btn-primary btn-lg">Add New Company</button>
-        <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Home</button>
+    <div className="container mx-auto p-6">
+      <h1 className="text-6xl font-bold mb-6 text-center">Manage Companies</h1>
+      <div className="flex justify-between mb-6">
+        <button onClick={handleAddCompanyClick} className="btn btn-primary btn-lg px-10 py-5 text-5xl">Add New Company</button>
+        <button onClick={handleBack} className="btn btn-primary btn-lg px-10 py-5 text-5xl">Back to Home</button>
       </div>
       <div className="overflow-x-auto">
-        <table className="table w-full">
+        <table className="table w-full text-4xl">
           <thead>
-            <tr>
-              <th className="text-5xl">ID</th>
-              <th className="text-5xl">Name</th>
-              <th className="text-5xl">Image</th> 
-              <th className="text-5xl">Actions</th>
+            <tr className="text-5xl">
+              <th>ID</th>
+              <th>Name</th>
+              <th>Logo</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {companies.map((company) => (
               <tr key={company.id}>
-                <td className="text-3xl">{company.id}</td>
-                <td className="text-3xl">
+                <td>{company.id}</td>
+                <td>
                   {editRowId === company.id ? (
                     <Formik
                       initialValues={{ name: company.name }}
@@ -74,11 +74,11 @@ const ManageCompanies = () => {
                     >
                       {({ isSubmitting }) => (
                         <Form>
-                          <Field name="name" type="text" className="input input-bordered w-full max-w-xs" />
-                          <ErrorMessage name="name" component="div" className="text-error" />
+                          <Field name="name" type="text" className="input input-bordered input-lg w-full max-w-xs text-lg" />
+                          <ErrorMessage name="name" component="div" className="text-error text-lg" />
                           <div className="flex justify-end mt-2">
-                            <button type="submit" disabled={isSubmitting} className="btn btn-success">Save</button>
-                            <button type="button" onClick={handleCancelClick} className="btn btn-ghost">Cancel</button>
+                            <button type="submit" disabled={isSubmitting} className="btn btn-success btn-lg px-4 py-2 text-3xl">Save</button>
+                            <button type="button" onClick={handleCancelClick} className="btn btn-ghost btn-lg px-4 py-2 text-3xl">Cancel</button>
                           </div>
                         </Form>
                       )}
@@ -87,19 +87,18 @@ const ManageCompanies = () => {
                     company.name
                   )}
                 </td>
-                <td className="text-3xl">
+                <td>
                   {company.image_path ? (
-                    <img src={company.image_path} alt={`${company.name} logo`} style={{ width: '100px', height: 'auto' }} />
+                    <img src={company.image_path} alt={`${company.name} logo`} style={{ width: '150px', height: 'auto' }} />
                   ) : (
-                    'No Image' 
+                    'No Image'
                   )}
                 </td>
                 <td>
-                  {/* Action buttons */}
                   {editRowId === company.id ? (
-                    <button onClick={() => handleDeleteClick(company.id)} className="btn btn-error">Delete</button>
+                    <button onClick={() => handleDeleteClick(company.id)} className="btn btn-error btn-lg px-4 py-2 text-3xl">Delete</button>
                   ) : (
-                    <button onClick={() => setEditRowId(company.id)} className="btn btn-accent btn-lg">Edit</button>
+                    <button onClick={() => setEditRowId(company.id)} className="btn btn-accent btn-xl px-4 py-2 text-3xl">Edit</button>
                   )}
                 </td>
               </tr>
@@ -109,6 +108,6 @@ const ManageCompanies = () => {
       </div>
     </div>
   );
-};
+}  
 
 export default ManageCompanies;

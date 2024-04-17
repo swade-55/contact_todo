@@ -7,6 +7,67 @@ from werkzeug.security import check_password_hash
 db = SQLAlchemy()
 
 
+class User(db.Model,SerializerMixin):
+    __tablename__ = 'user'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+    
+    #Relationships
+    managed_companies = db.relationship('Company', back_populates="manager")
+    managed_contacts = db.relationship('Contact', back_populates="manager")
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    serialize_rules = ('-managed_companies', '-managed_contacts', '-password_hash',)
+    def __repr__(self):
+        return '<User %r>' % self.username
+    
+class Company(db.Model, SerializerMixin):
+    __tablename__ = 'company'
+    
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(100),nullable=False)
+    manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+    image_path = db.Column(db.String(255), nullable=True) 
+    
+    #Relationships
+    manager = db.relationship('User', back_populates="managed_companies")
+    contacts = db.relationship('Contact', back_populates="company", cascade="all, delete")
+    
+    serialize_rules = ('-manager.managed_contacts','-manager.managed_companies',  '-contacts.company','-contacts.todo_lists','-contacts.manager')
+    
+    def __repr__(self):
+        return f'<Company {self.name}>'
+    
+class Contact(db.Model, SerializerMixin):
+    __tablename__ = 'contact'
+    
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(100),nullable=False)
+    last_contact_date = db.Column(db.DateTime,nullable=True)
+    status = db.Column(db.String(50),nullable=False) # hot,warm,cold
+    job_title = db.Column(db.String(100),nullable=True)
+    email = db.Column(db.String(120),nullable=True)
+    phone = db.Column(db.String(20),nullable=True)
+    company_id = db.Column(db.Integer,db.ForeignKey('company.id'))
+    manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+
+    
+    todo_lists = db.relationship('ToDoList', back_populates='contact', lazy=True, cascade="all, delete")
+    company = db.relationship('Company', back_populates="contacts")
+    manager = db.relationship('User', back_populates="managed_contacts")
+    
+    serialize_rules = ('-company.contacts','-company.manager', '-manager.managed_contacts','-manager.managed_companies', '-todo_lists.todos',)
+        
+    
+    
+    def __repr__(self):
+        return f'<Contact {self.name}>'
+
 class ToDoTag(db.Model, SerializerMixin):
     __tablename__ = 'todo_tag'
     id = db.Column(db.Integer,primary_key=True)
@@ -56,66 +117,6 @@ class Tag(db.Model,SerializerMixin):
     def __repr__(self):
         return '<Tag %r>' % self.name
 
-class Company(db.Model, SerializerMixin):
-    __tablename__ = 'company'
-    
-    id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String(100),nullable=False)
-    manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
-    image_path = db.Column(db.String(255), nullable=True) 
-    
-    #Relationships
-    manager = db.relationship('User', back_populates="managed_companies")
-    contacts = db.relationship('Contact', back_populates="company", cascade="all, delete")
-    
-    serialize_rules = ('-manager.managed_contacts','-manager.managed_companies',  '-contacts.company','-contacts.todo_lists','-contacts.manager')
-    
-    def __repr__(self):
-        return f'<Company {self.name}>'
-
-class User(db.Model,SerializerMixin):
-    __tablename__ = 'user'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
-    
-    #Relationships
-    managed_companies = db.relationship('Company', back_populates="manager")
-    managed_contacts = db.relationship('Contact', back_populates="manager")
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-    
-    serialize_rules = ('-managed_companies', '-managed_contacts', '-password_hash',)
-    def __repr__(self):
-        return '<User %r>' % self.username
-    
-class Contact(db.Model, SerializerMixin):
-    __tablename__ = 'contact'
-    
-    id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String(100),nullable=False)
-    last_contact_date = db.Column(db.DateTime,nullable=True)
-    status = db.Column(db.String(50),nullable=False) # hot,warm,cold
-    job_title = db.Column(db.String(100),nullable=True)
-    email = db.Column(db.String(120),nullable=True)
-    phone = db.Column(db.String(20),nullable=True)
-    company_id = db.Column(db.Integer,db.ForeignKey('company.id'))
-    manager_id = db.Column(db.Integer,db.ForeignKey('user.id'))
-
-    
-    todo_lists = db.relationship('ToDoList', back_populates='contact', lazy=True, cascade="all, delete")
-    company = db.relationship('Company', back_populates="contacts")
-    manager = db.relationship('User', back_populates="managed_contacts")
-    
-    serialize_rules = ('-company.contacts','-company.manager', '-manager.managed_contacts','-manager.managed_companies', '-todo_lists.todos',)
-        
-    
-    
-    def __repr__(self):
-        return f'<Contact {self.name}>'
     
 class ToDoList(db.Model,SerializerMixin):
     __tablename__ = 'list'

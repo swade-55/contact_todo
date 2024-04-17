@@ -6,43 +6,6 @@ from werkzeug.datastructures import FileStorage
 # from  werkzeug import secure_filename, FileStorage
 import os
 
-
-
-# @app.route('/companies', methods=['POST'])
-# def add_company():
-#     try:
-#         # Extract data from the request
-#         # data = request.json
-#         name = request.form.get('name')
-#         manager_id = request.form.get('manager_id')
-#         image = request.files.get('image')
-
-#         # Validate required fields
-#         if not name or not manager_id:
-#             return jsonify({'message': 'Name and Manager ID are required'}), 400
-
-#         if image:
-#             filename = secure_filename(image.filename)
-#             image_path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-#             image.save(image_path)
-
-#         # Check if manager exists
-#         manager = User.query.get(manager_id)
-#         if not manager:
-#             return jsonify({'message': 'Manager not found'}), 404
-
-#         # Create a new company instance
-#         new_company = Company(name=name, manager_id=manager_id)
-#         new_company.image_path = image_path
-
-#         # Add the new company to the database
-#         db.session.add(new_company)
-#         db.session.commit()
-
-#         return jsonify(new_company.to_dict()), 201
-#     except Exception as e:
-#         # Handle exceptions and errors
-#         return jsonify({'message': str(e)}), 500
     
     
 @app.route('/companies/<int:user_id>', methods=['GET'])
@@ -50,7 +13,6 @@ def get_companies(user_id):
     companies = Company.query.filter_by(manager_id=user_id).all()
     companies_data = [c.to_dict() for c in companies]
     return jsonify(companies_data)
-    #test
 
 @app.route('/companies/<int:company_id>', methods=['PATCH'])
 def update_company(company_id):

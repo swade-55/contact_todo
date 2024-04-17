@@ -38,16 +38,21 @@ function Layout() {
       <header className="navbar bg-base-100">
         <div className="flex-grow">
           <div className="flex justify-between items-center w-full px-4">
-            <Link to="/manage-companies"><button className="btn btn-primary btn-lg">Manage All Companies</button></Link>
-            <Link to="/manage-contacts"><button className="btn btn-secondary btn-lg">Manage All Contacts</button></Link>
-            <Link to="/manage-todo"><button className="btn btn-accent btn-lg">Manage All ToDo</button></Link>
+          <Link to="/manage-companies">
+  <button className="btn btn-neutral btn-lg p-5 text-5xl flex justify-center items-center">Manage All Companies</button>
+</Link>
+<Link to="/manage-contacts">
+  <button className="btn btn-primary btn-lg p-5 text-5xl flex justify-center items-center">Manage All Contacts</button>
+</Link>
+
+            {/* <Link to="/manage-todo"><button className="btn btn-accent btn-lg p-4 text-5xl">Manage All ToDo</button></Link> */}
             {!auth.isAuthenticated ? (
               <>
                 <Link to="/login"><button className="btn">Login</button></Link>
                 <Link to="/signup"><button className="btn">Signup</button></Link>
               </>
             ) : (
-              <button className="btn" onClick={handleLogout}>Logout</button>
+              <button className="btn btn-info btn-lg p-5 text-5xl"onClick={handleLogout}>Logout</button>
             )}
           </div>
         </div>
@@ -61,6 +66,8 @@ function Layout() {
     </div>
   );
 }
+
+
 
 function HeroSection() {
   // State to control the visibility of the modal
@@ -78,9 +85,9 @@ function HeroSection() {
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content text-center">
         <div className="max-w-md">
-          <h1 className="text-5xl font-bold">Welcome to the Contact Management System</h1>
-          <p className="py-6">Manage your contacts.</p>
-          <button className="btn btn-primary btn-lg" onClick={openModal}>Get Started</button>
+          <h1 className="text-5xl font-bold">Manage Your Contacts</h1>
+          <p className="py-12"></p>
+          <button className="btn btn-info btn-lg p-5 text-5xl flex justify-center items-center w-full h-full" onClick={openModal}>Get Started</button>
         </div>
       </div>
 
@@ -89,15 +96,15 @@ function HeroSection() {
         <div className={`modal ${isModalOpen ? 'modal-open' : ''}`}>
           <div className="modal-box relative">
             <label htmlFor="my-modal" className="btn btn-sm btn-circle absolute right-2 top-2" onClick={closeModal}>✕</label>
-            <h3 className="text-lg font-bold">Instructions</h3>
-            <p className="py-4">Here are the steps to use this system efficiently:</p>
+            <h3 className="text-4xl font-bold">Instructions</h3>
+            <p className="py-5 text-5xl">Here are the steps to use this system efficiently:</p>
             <ul className="list-disc list-inside">
-              <li>Navigate to Manage Companies to add or edit company details.</li>
-              <li>Go to Manage Contacts to view and manage your contacts.</li>
-              <li>Use the Manage ToDo section to keep track of your tasks for each contact.</li>
+              <li className="text-4xl">Navigate to Manage Companies to add or edit company details.</li>
+              <li className="text-4xl">Go to Manage Contacts to view and manage your contacts.</li>
+              <li className="text-4xl">Use the Manage ToDo section to keep track of your tasks for each contact.</li>
             </ul>
             <div className="modal-action">
-              <button className="btn btn-primary" onClick={closeModal}>Got it!</button>
+              <button className="btn btn-info btn-lg p-5 text-5xl flex justify-center items-center w-full h-full" onClick={closeModal}>Got it!</button>
             </div>
           </div>
         </div>
@@ -126,7 +133,7 @@ function App() {
   
   return (
     <BrowserRouter>
-      <Breadcrumbs />
+      {/* <Breadcrumbs /> */}
       <Routes>
         {/* Public Routes */}
         {!auth.isAuthenticated ? (

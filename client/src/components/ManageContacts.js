@@ -58,49 +58,49 @@ const ManageContacts = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-    <h1 className="text-6xl font-bold mb-4 text-center">Manage Contacts</h1>
-      <div className="flex gap-4 mb-4">
-      <button onClick={handleAddContactClick} className="btn btn-primary btn-lg">Add New Contact</button>
-      <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Home</button>
-      <select value={selectedCompanyId} onChange={handleCompanyChange} className="select select-bordered">
-        <option value="">Select a Company</option>
-        {companies.map((company) => (
-          <option key={company.id} value={company.id}>
-            {company.name}
-          </option>
-        ))}
-      </select>
+    <div className="container mx-auto p-6">
+      <h1 className="text-6xl font-bold mb-6 text-center">Manage Contacts</h1>
+      <div className="flex gap-4 mb-6">
+        <button onClick={handleAddContactClick} className="btn btn-primary btn-lg px-10 py-5 text-5xl">Add New Contact</button>
+        <button onClick={handleBack} className="btn btn-primary btn-lg px-10 py-5 text-5xl">Back to Home</button>
+        <select value={selectedCompanyId} onChange={handleCompanyChange} className="select select-bordered select-lg text-3xl p-4">
+          <option value="">Select a Company</option>
+          {companies.map((company) => (
+            <option key={company.id} value={company.id}>
+              {company.name}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="overflow-x-auto">
-      <table className="table w-full">
-        <thead>
-          <tr>
-            <th className="text-5xl">ID</th>
-            <th className="text-5xl">Company</th>
-              <th className="text-5xl">Name</th>
-              <th className="text-5xl">Status</th>
-              <th className="text-5xl">Job Title</th> 
-              <th className="text-5xl">Phone</th>
-              <th className="text-5xl">Email</th> 
-              <th className="text-5xl">Actions</th>
+        <table className="table w-full text-3xl">
+          <thead>
+            <tr className="text-5xl">
+              <th>ID</th>
+              <th>Company</th>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Job Title</th> 
+              <th>Phone</th>
+              <th>Email</th> 
+              <th>Actions</th>
             </tr>
-        </thead>
-        <tbody>
-        {filteredContacts.map((contact) => (
+          </thead>
+          <tbody>
+          {filteredContacts.map((contact) => (
             <tr key={contact.id}>
-              <td className="text-3xl">{contact.id}</td>
-              <td className="text-3xl">{contact.company?.name ?? 'No Company'}</td>
-              <td className="text-3xl">
+              <td>{contact.id}</td>
+              <td>{contact.company?.name ?? 'No Company'}</td>
+              <td>
                 {editRowId === contact.id ? (
                   <Formik
-                  initialValues={{
-                    name: contact.name,
-                    status: contact.status,
-                    job_title: contact.job_title || '',
-                    phone: contact.phone || '',
-                    email: contact.email || '',
-                  }}
+                    initialValues={{
+                      name: contact.name,
+                      status: contact.status,
+                      job_title: contact.job_title || '',
+                      phone: contact.phone || '',
+                      email: contact.email || '',
+                    }}
                     validationSchema={contactSchema}
                     onSubmit={(values, { setSubmitting }) => {
                       dispatch(updateContact({ ...contact, ...values }))
@@ -111,69 +111,60 @@ const ManageContacts = () => {
                   >
                     {({ isSubmitting }) => (
                       <Form>
-                      <td className="text-3xl">
-              <Field name="name" type="text" className="input input-bordered" />
-              <ErrorMessage name="name" component="div" className="text-error"/>
-            </td>
-                      <td className="text-3xl">
-                        <Field as="select" name="status" className="select select-bordered">
+                        <Field name="name" type="text" className="input input-bordered input-lg w-full text-lg" />
+                        <ErrorMessage name="name" component="div" className="text-error text-lg" />
+                        <Field as="select" name="status" className="select select-bordered select-lg w-full text-lg">
                           <option value="">Select Status</option>
                           <option value="hot">Hot</option>
                           <option value="warm">Warm</option>
                           <option value="cold">Cold</option>
                         </Field>
-                        <ErrorMessage name="status" component="div" className="text-error"/>
-                      </td>
-                      <td className="text-3xl">
-                        <Field name="job_title" type="text" className="input input-bordered" />
-                        <ErrorMessage name="job_title" component="div" className="text-error"/>
-                      </td>
-                      <td className="text-3xl">
-                        <Field name="phone" type="text" className="input input-bordered" />
-                        <ErrorMessage name="phone" component="div" className="text-error"/>
-                      </td>
-                      <td className="text-3xl">
-                        <Field name="email" type="email" className="input input-bordered" />
-                        <ErrorMessage name="email" component="div" className="text-error"/>
-                      </td>
-                      <td>
-                        <button type="submit" disabled={isSubmitting}>Save</button>
-                        <button type="button" onClick={handleCancelClick}>Cancel</button>
-                      </td>
-                    </Form>
-                  )}
-                </Formik>
-              ) : (
-                <>
-                  {contact.name}
-                </>
-              )}
-            </td>
-            <td className={`text-3xl ${contact.status === 'hot' ? 'text-red-500' : contact.status === 'warm' ? 'text-yellow-500' : 'text-blue-500'}`}>
-              {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
-    </td>
-    <td>{contact.job_title || 'N/A'}</td> {/* Display job title */}
-                <td>{contact.phone || 'N/A'}</td> {/* Display phone */}
-                <td>{contact.email || 'N/A'}</td> {/* Display email */}
-              <td>
-              <div className="flex gap-2">
-                {editRowId === contact.id ? (
-                  <>
-                    <button onClick={() => handleDeleteClick(contact.id)} className="btn btn-error btn-sm">Delete</button>
-                    <button onClick={handleCancelClick}>Cancel</button>
-                  </>
+                        <ErrorMessage name="status" component="div" className="text-error text-lg" />
+                        <Field name="job_title" type="text" className="input input-bordered input-lg w-full text-lg" />
+                        <ErrorMessage name="job_title" component="div" className="text-error text-lg" />
+                        <Field name="phone" type="text" className="input input-bordered input-lg w-full text-lg" />
+                        <ErrorMessage name="phone" component="div" className="text-error text-lg" />
+                        <Field name="email" type="email" className="input input-bordered input-lg w-full text-lg" />
+                        <ErrorMessage name="email" component="div" className="text-error text-lg" />
+                        <div className="flex gap-2">
+                          <button type="submit" disabled={isSubmitting} className="btn btn-success btn-lg px-4 py-2 text-3xl">Save</button>
+                          <button type="button" onClick={handleCancelClick} className="btn btn-ghost btn-lg px-4 py-2 text-3xl">Cancel</button>
+                        </div>
+                      </Form>
+                    )}
+                  </Formik>
                 ) : (
-                  <button onClick={() => setEditRowId(contact.id)} className="btn btn-info btn-lg">Edit</button>
+                  <>
+                    {contact.name}
+                  </>
                 )}
+              </td>
+              <td className={`text-3xl ${contact.status === 'hot' ? 'text-red-500' : contact.status === 'warm' ? 'text-yellow-500' : 'text-blue-500'}`}>
+                {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
+              </td>
+              <td>{contact.job_title || 'N/A'}</td> {/* Display job title */}
+              <td>{contact.phone || 'N/A'}</td> {/* Display phone */}
+              <td>{contact.email || 'N/A'}</td> {/* Display email */}
+              <td>
+                <div className="flex gap-2">
+                  {editRowId === contact.id ? (
+                    <>
+                      <button onClick={() => handleDeleteClick(contact.id)} className="btn btn-error btn-lg px-4 py-2 text-3xl">Delete</button>
+                      <button onClick={handleCancelClick} className="btn btn-ghost btn-lg px-4 py-2 text-3xl">Cancel</button>
+                    </>
+                  ) : (
+                    <button onClick={() => setEditRowId(contact.id)} className="btn btn-info btn-lg px-4 py-2 text-3xl">Edit</button>
+                  )}
                 </div>
               </td>
             </tr>
           ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
       </div>
     </div>
   );
+  
 };
 
 export default ManageContacts;

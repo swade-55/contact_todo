@@ -61,7 +61,7 @@ const LoginForm = () => {
                 </div>
 
                 <div className="form-control mt-6">
-                  <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+                  <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-lg p-4 text-4xl">
                     Login
                   </button>
                 </div>

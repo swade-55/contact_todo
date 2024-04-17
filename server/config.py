@@ -8,8 +8,8 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 secret_key = secrets.token_hex(16)
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///task_arena.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:password@localhost/dbname'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///task_arena.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/dbname'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = secret_key
 

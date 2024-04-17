@@ -49,29 +49,29 @@ const NewCompanyForm = () => {
   
 
   return (
-    <div className="card bg-base-100 shadow-xl p-5">
+    <div className="card bg-base-100 shadow-xl p-8">
       <div className="card-body">
-        <button onClick={handleBack} className="btn px-10 py-3 text-lg">
+        <button onClick={handleBack} className="btn btn-accent btn-lg px-10 py-4 text-3xl mb-5">
           Back to Manage Companies
         </button>
-        <h1 className="card-title my-4">Add New Company</h1>
+        <h1 className="card-title text-4xl my-4">Add New Company</h1>
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
           {({ isSubmitting, setFieldValue }) => (
             <Form>
-              <div className="form-group">
-                <label htmlFor="name" className="label">Company Name</label>
-                <Field id="name" name="name" placeholder="Company Name" className="input input-bordered w-full" />
-                <ErrorMessage name="name" component="div" className="text-error" />
+              <div className="form-control w-full max-w-xs">
+                <label htmlFor="name" className="label text-4xl">Company Name</label>
+                <Field id="name" name="name" placeholder="Company Name" className="input input-bordered input-lg w-full text-lg" />
+                <ErrorMessage name="name" component="div" className="text-error text-4xl" />
               </div>
               
-              <div className="form-group">
-                <label htmlFor="image" className="label">Company Image</label>
+              <div className="form-control w-full max-w-xs my-6">
+                <label htmlFor="image" className="label text-4xl">Company Image</label>
                 <input id="image" name="image" type="file" onChange={(event) => {
                   setFieldValue("image", event.currentTarget.files[0]);
-                }} className="input input-bordered w-full" />
+                }} className="input input-bordered input-lg w-full" />
               </div>
 
-              <button type="submit" disabled={isSubmitting} className="btn btn-primary mt-4">
+              <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-lg p-5 text-4xl flex justify-center items-center w-full">
                 Submit
               </button>
             </Form>
