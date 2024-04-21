@@ -1,16 +1,31 @@
 import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage, useField } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from './slices/contactsSlice';
 
+const CustomSelect = ({ label, ...props }) => {
+  const [field, meta] = useField(props);
+  return (
+    <div>
+      <label htmlFor={props.id || props.name} className="label">{label}</label>
+      <select {...field} {...props} className={`select select-bordered w-full mb-3 ${
+        meta.touched && meta.error ? 'select-error' : ''
+      }`}>
+        {props.children}
+      </select>
+      <ErrorMessage component="div" name={props.name} className="text-error mb-3" />
+    </div>
+  );
+};
+
 const NewContactForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const companies = useSelector((state) => state.companies.companies);
-  const loggedInUserId = useSelector((state) => state.auth.user);
-  console.log(loggedInUserId)
+  const loggedInUserId = useSelector((state) => state.auth.user.id); 
+  console.log("Logged in user",loggedInUserId)
   const initialValues = {
     name: '',
     status: '',
@@ -31,7 +46,7 @@ const NewContactForm = () => {
       .required('Company ID is required')
       .positive('Company ID must be positive')
       .integer('Company ID must be an integer'),
-    job_title: Yup.number()
+    job_title: Yup.string()
       .required('Job Title is required'),
     phone: Yup.string()
       .required('Phone number is required')
@@ -52,14 +67,9 @@ const NewContactForm = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate('/manage-contacts');
-  };
-
   return (
     <div className="card bg-base-100 shadow-xl p-5">
       <div className="card-body">
-        <button onClick={handleBack} className="btn px-10 py-3 text-lg">Back to Manage Contacts</button>
         <h1 className="card-title mb-4">Add New Contact</h1>
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
           {({ isSubmitting }) => (
@@ -67,43 +77,33 @@ const NewContactForm = () => {
               <label htmlFor="name" className="label">
                 Contact Name
               </label>
-              <Field id="name" type="text" name="name" placeholder="Contact Name" className="input input-bordered w-full mb-3" />
-              <ErrorMessage name="name" component="div" className="text-error mb-3" />
+              <Field id="name" type="text" name="name" placeholder="Contact Name" className="input input-bordered w-full mb-3 text-xl" />
+              <ErrorMessage name="name" component="div" className="text-error mb-3 text-xl" />
 
-              <label htmlFor="status" className="label">
-                Status
-              </label>
-              <Field as="select" name="status" className="select select-bordered w-full mb-3">
+              <CustomSelect name="status" label="Status">
                 <option value="">Select Status</option>
-                <option value="Hot">Hot</option>
-                <option value="Cold">Cold</option>
-                <option value="Warm">Warm</option>
-              </Field>
-              <ErrorMessage name="status" component="div" className="text-error mb-3" />
+                <option value="Hot" style={{ color: 'red' }}>Hot</option>
+                <option value="Cold" style={{ color: 'blue' }}>Cold</option>
+                <option value="Warm" style={{ color: 'orange' }}>Warm</option>
+              </CustomSelect>
 
-              <label htmlFor="company_id" className="label">
-                Company
-              </label>
-              <Field as="select" name="company_id" className="select select-bordered w-full mb-3">
+              <CustomSelect name="company_id" label="Company">
                 <option value="">Select Company</option>
-                {companies.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
-                  </option>
+                {companies.map(company => (
+                  <option key={company.id} value={company.id}>{company.name}</option>
                 ))}
-              </Field>
-              <ErrorMessage name="company_id" component="div" className="text-error mb-3" />
+              </CustomSelect>
               <label htmlFor="job_title" className="label">Job Title</label>
-              <Field id="job_title" name="job_title" placeholder="Job Title" className="input input-bordered w-full mb-3" />
-              <ErrorMessage name="job_title" component="div" className="text-error mb-3" />
+              <Field id="job_title" name="job_title" placeholder="Job Title" className="input input-bordered w-full mb-3 text-xl" />
+              <ErrorMessage name="job_title" component="div" className="text-error mb-3 text-xl" />
 
               <label htmlFor="phone" className="label">Phone</label>
-              <Field id="phone" name="phone" placeholder="Phone Number" className="input input-bordered w-full mb-3" />
-              <ErrorMessage name="phone" component="div" className="text-error mb-3" />
+              <Field id="phone" name="phone" placeholder="Phone Number" className="input input-bordered w-full mb-3 text-xl" />
+              <ErrorMessage name="phone" component="div" className="text-error mb-3 text-xl" />
 
               <label htmlFor="email" className="label">Email</label>
-              <Field id="email" name="email" placeholder="Email Address" className="input input-bordered w-full mb-3" />
-              <ErrorMessage name="email" component="div" className="text-error mb-3" />
+              <Field id="email" name="email" placeholder="Email Address" className="input input-bordered w-full mb-3 text-xl" />
+              <ErrorMessage name="email" component="div" className="text-error mb-3 text-xl" />
 
               <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-lg">
                 Submit

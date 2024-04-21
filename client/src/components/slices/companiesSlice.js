@@ -58,6 +58,7 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
   
   export const updateCompany = createAsyncThunk('companies/updateCompany', async ({id, formData}, { rejectWithValue }) => {
     try {
+      console.log(`Sending PATCH request for company ${id} with data:`, formData);
       const response = await fetch(`/companies/${id}`, {
         method: 'PATCH',
         body: formData, // Now correctly using the formData passed in the payload
@@ -66,8 +67,8 @@ export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
       return await response.json();
+      
     } catch (error) {
       return rejectWithValue(error.message);
     }

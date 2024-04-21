@@ -3,23 +3,28 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Breadcrumbs = () => {
   const location = useLocation();
-  console.log(location);
-  let currentLink = ''
+  const pathnames = location.pathname.split('/').filter((x) => x);
 
-  const crumbs = location.pathname.split('/').filter(crumb=>crumb !== '').map(crumb=> {
-    currentLink =+ `/${crumb}`
-
-    return (
-      <div className="crumb" key={crumb}>
-        <Link to={currentLink}>{crumb}</Link>
-      </div>
-    )
-  })
+  const displayNameMapping = {
+    'manage-companies': 'Manage Companies',
+    'add-company': 'New Company Form',
+    // Add more mappings as needed
+  };
 
 
   return (
-    <div className="breadcrumbs">
-      {crumbs}
+    <div>
+      <Link to="/">Home</Link>
+      {pathnames.map((value, index) => {
+        const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+
+        return (
+          <span key={to}>
+            {' > '}
+            <Link to={to}>{value}</Link>
+          </span>
+        );
+      })}
     </div>
   );
 };

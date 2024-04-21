@@ -14,36 +14,75 @@ def get_companies(user_id):
     companies_data = [c.to_dict() for c in companies]
     return jsonify(companies_data)
 
+# @app.route('/companies/<int:company_id>', methods=['PATCH'])
+# def update_company(company_id):
+#     try:
+#         breakpoint()
+#         # Fetch the company based on company_id
+#         company = Company.query.get(company_id)
+#         if not company:
+#             return jsonify({'message': 'Company not found'}), 404
+
+#         data = request.json
+#         if 'name' in data:
+#             company.name = data['name']
+        
+#         if 'manager_id' in data:
+#             manager = User.query.get(data['manager_id'])
+#             if not manager:
+#                 return jsonify({'message': 'Manager not found'}), 404
+#             company.manager_id = data['manager_id']
+
+#         if 'image' in request.files:
+#             image = request.files['image']
+#             filename = secure_filename(image.filename)
+#             filepath = os.path.join('/path/to/upload/directory', filename)
+#             image.save(filepath)
+#             company.image_path = filepath
+        
+#         db.session.commit()
+#         return jsonify(company.to_dict()), 200
+#     except Exception as e:
+#         # Handle exceptions and errors
+#         return jsonify({'message': str(e)}), 500
+
 @app.route('/companies/<int:company_id>', methods=['PATCH'])
 def update_company(company_id):
     try:
-        # Fetch the company based on company_id
+        # breakpoint()
         company = Company.query.get(company_id)
         if not company:
             return jsonify({'message': 'Company not found'}), 404
 
-        data = request.json
-        if 'name' in data:
-            company.name = data['name']
-        
-        if 'manager_id' in data:
-            manager = User.query.get(data['manager_id'])
+        # Assuming data comes as FormData (multipart/form-data)
+        name = request.form.get('name')
+        manager_id = request.form.get('manager_id')
+        image = request.files.get('image')
+
+        # Update company data if provided
+        if name:
+            company.name = name
+        if manager_id:
+            manager = User.query.get(manager_id)
             if not manager:
                 return jsonify({'message': 'Manager not found'}), 404
-            company.manager_id = data['manager_id']
+            company.manager_id = manager_id
 
-        if 'image' in request.files:
-            image = request.files['image']
+        # Handle new image upload
+        if image:
             filename = secure_filename(image.filename)
-            filepath = os.path.join('/path/to/upload/directory', filename)
-            image.save(filepath)
-            company.image_path = filepath
-        
+            image_folder = app.config['UPLOADED_IMAGES_DEST']
+            os.makedirs(image_folder, exist_ok=True)
+            image_path = os.path.join(image_folder, filename)
+            image.save(image_path)
+            company.image_path = image_path
+
         db.session.commit()
         return jsonify(company.to_dict()), 200
+
     except Exception as e:
-        # Handle exceptions and errors
         return jsonify({'message': str(e)}), 500
+
     
     
 @app.route('/companies', methods=['POST'])

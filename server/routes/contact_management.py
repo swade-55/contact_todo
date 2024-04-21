@@ -11,8 +11,8 @@ def add_contact():
     new_contact = Contact(
         name=data.get('name'),
         status = data.get('status'),
-        manager_id = data.get('manager_id'),
-        company_id=data.get('company_id'),
+        manager_id=int(data.get('manager_id')),
+        company_id=int(data.get('company_id')),
         phone = data.get('phone'),
         email = data.get('email'),
         job_title = data.get('job_title'),

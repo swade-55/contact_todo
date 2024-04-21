@@ -15,7 +15,7 @@ import NewUserForm from './NewUserForm'
 import NewListForm from './NewListForm'
 import LoginForm from './LoginForm';
 import ProtectedRoute from './ProtectedRoute';
-import { checkSession,logoutUser } from './slices/authSlice';
+import { checkSession, logoutUser } from './slices/authSlice';
 import { useSelector } from 'react-redux';
 import LandingPage from './LandingPage';
 import { BrowserRouter } from 'react-router-dom';
@@ -38,12 +38,40 @@ function Layout() {
       <header className="navbar bg-base-100">
         <div className="flex-grow">
           <div className="flex justify-between items-center w-full px-4">
-          <Link to="/manage-companies">
-  <button className="btn btn-neutral btn-lg p-5 text-5xl flex justify-center items-center">Manage All Companies</button>
-</Link>
-<Link to="/manage-contacts">
-  <button className="btn btn-primary btn-lg p-5 text-5xl flex justify-center items-center">Manage All Contacts</button>
-</Link>
+            <Link to="/manage-companies">
+              {/* <button className="btn btn-neutral btn-lg p-5 text-5xl flex justify-center items-center">Manage All Companies</button> */}
+              <button
+                className="btn btn-primary btn-lg text-5xl flex justify-center items-center"
+                style={{
+                  padding: '1.25rem 2.5rem', // Equivalent to py-5 px-10 in Tailwind
+                  display: 'inline-flex', // Make sure it's flex
+                  alignItems: 'center', // Vertically centers text
+                  justifyContent: 'center', // Horizontally centers text
+                  height: '100%', // Ensure full height is used
+                  width: 'auto', // Adjust width as needed or use specific size
+                  lineHeight: '1' // Adjust line height to ensure vertical centering
+                }}
+              >
+                Manage All Companies
+              </button>
+            </Link>
+            <Link to="/manage-contacts">
+              {/* <button className="btn btn-primary btn-lg p-5 text-5xl flex justify-center items-center">Manage All Contacts</button> */}
+              <button
+                className="btn btn-primary btn-lg text-5xl flex justify-center items-center"
+                style={{
+                  padding: '1.25rem 2.5rem', // Equivalent to py-5 px-10 in Tailwind
+                  display: 'inline-flex', // Make sure it's flex
+                  alignItems: 'center', // Vertically centers text
+                  justifyContent: 'center', // Horizontally centers text
+                  height: '100%', // Ensure full height is used
+                  width: 'auto', // Adjust width as needed or use specific size
+                  lineHeight: '1' // Adjust line height to ensure vertical centering
+                }}
+              >
+                Manage All Contacts
+              </button>
+            </Link>
 
             {/* <Link to="/manage-todo"><button className="btn btn-accent btn-lg p-4 text-5xl">Manage All ToDo</button></Link> */}
             {!auth.isAuthenticated ? (
@@ -52,7 +80,21 @@ function Layout() {
                 <Link to="/signup"><button className="btn">Signup</button></Link>
               </>
             ) : (
-              <button className="btn btn-info btn-lg p-5 text-5xl"onClick={handleLogout}>Logout</button>
+              // <button className="btn btn-info btn-lg p-5 text-5xl"onClick={handleLogout}>Logout</button>
+              <button onClick={handleLogout}
+                className="btn btn-info btn-lg text-5xl flex justify-center items-center"
+                style={{
+                  padding: '1.25rem 2.5rem', // Equivalent to py-5 px-10 in Tailwind
+                  display: 'inline-flex', // Make sure it's flex
+                  alignItems: 'center', // Vertically centers text
+                  justifyContent: 'center', // Horizontally centers text
+                  height: '100%', // Ensure full height is used
+                  width: 'auto', // Adjust width as needed or use specific size
+                  lineHeight: '1' // Adjust line height to ensure vertical centering
+                }}
+              >
+                Logout
+              </button>
             )}
           </div>
         </div>
@@ -87,7 +129,7 @@ function HeroSection() {
         <div className="max-w-md">
           <h1 className="text-5xl font-bold">Manage Your Contacts</h1>
           <p className="py-12"></p>
-          <button className="btn btn-info btn-lg p-5 text-5xl flex justify-center items-center w-full h-full" onClick={openModal}>Get Started</button>
+          <button className="btn btn-info btn-lg p-5 text-5xl flex justify-center items-center w-full h-full" onClick={openModal}>Help</button>
         </div>
       </div>
 
@@ -99,9 +141,9 @@ function HeroSection() {
             <h3 className="text-4xl font-bold">Instructions</h3>
             <p className="py-5 text-5xl">Here are the steps to use this system efficiently:</p>
             <ul className="list-disc list-inside">
-              <li className="text-4xl">Navigate to Manage Companies to add or edit company details.</li>
-              <li className="text-4xl">Go to Manage Contacts to view and manage your contacts.</li>
-              <li className="text-4xl">Use the Manage ToDo section to keep track of your tasks for each contact.</li>
+              <li className="text-4xl">Navigate to Manage All Companies to add or edit company details.</li>
+              <li className="text-4xl">Go to Manage All Contacts to view and manage your contacts.</li>
+              <li className="text-4xl">For help, contact help@tamu.edu</li>
             </ul>
             <div className="modal-action">
               <button className="btn btn-info btn-lg p-5 text-5xl flex justify-center items-center w-full h-full" onClick={closeModal}>Got it!</button>
@@ -130,10 +172,10 @@ function App() {
         }
       });
   }, [dispatch]);
-  
+
   return (
     <BrowserRouter>
-      {/* <Breadcrumbs /> */}
+      <Breadcrumbs />
       <Routes>
         {/* Public Routes */}
         {!auth.isAuthenticated ? (
@@ -146,23 +188,25 @@ function App() {
           </>
         ) : (
           /* Protected Routes for Authenticated Users */
-          
+
           <>
             <Route path="/layout" element={<Layout />} />
             <Route path="/add-todo" element={<NewTodoForm />} />
             <Route path="/add-list" element={<NewListForm />} />
             <Route path="/add-tag" element={<NewTagForm />} />
-            <Route path="/manage-companies" element={<ManageCompanies />} />
+            <Route path="/manage-companies" element={<ManageCompanies />}>
+              <Route path="add-company" element={<NewCompanyForm />} />
+            </Route>
             <Route path="/manage-contacts" element={<ManageContacts />} />
             <Route path="/manage-todo" element={<ManageToDo />} />
-            <Route path="/add-company" element={<NewCompanyForm />} />
+            {/* <Route path="/add-company" element={<NewCompanyForm />} /> */}
             <Route path="/add-contact" element={<NewContactForm />} />
             {/* Redirect unhandled paths back to "/layout" for authenticated users */}
             <Route path="*" element={<Navigate replace to="/layout" />} />
           </>
         )}
       </Routes>
-      
+
     </BrowserRouter>
   );
-}export default App;
+} export default App;
