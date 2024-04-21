@@ -35,7 +35,7 @@ function Layout() {
   };
   return (
     <div className="flex flex-col h-screen">
-      <header className="navbar bg-base-100">
+      <header className="navbar bg-base-100" style={{ zIndex: '1000' }}>
         <div className="flex-grow">
           <div className="flex justify-between items-center w-full px-4">
             <Link to="/manage-companies">
@@ -172,6 +172,7 @@ function App() {
         }
       });
   }, [dispatch]);
+
 
   return (
     <BrowserRouter>

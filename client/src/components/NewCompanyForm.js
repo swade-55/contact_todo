@@ -7,8 +7,10 @@ import { addCompany } from './slices/companiesSlice';
 
 const NewCompanyForm = ({ onClose }) => {
   const dispatch = useDispatch();
-  const loggedInUserId = useSelector((state) => state.auth.user.id); 
+  const loggedInUserId = useSelector((state) => state.auth.user);
+  // const loggedInUserIdObject = useSelector((state) => state.auth.user);
   console.log('logged in user', loggedInUserId)
+  
 
   const initialValues = {
     name: '',

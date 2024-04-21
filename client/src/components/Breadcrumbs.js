@@ -11,17 +11,22 @@ const Breadcrumbs = () => {
     // Add more mappings as needed
   };
 
-
   return (
-    <div>
-      <Link to="/">Home</Link>
+    <div className="text-4xl">
+      <Link to="/" className="text-4xl hover:text-blue-600">Home</Link>
       {pathnames.map((value, index) => {
+        const isLast = index === pathnames.length - 1;
         const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+        const displayName = displayNameMapping[value] || value;
 
         return (
-          <span key={to}>
+          <span key={to} className="text-4xl">
             {' > '}
-            <Link to={to}>{value}</Link>
+            {!isLast ? (
+              <Link to={to} className="text-4xl text-blue-600">{displayName}</Link>
+            ) : (
+              <span className="4text-xl">{displayName}</span>
+            )}
           </span>
         );
       })}

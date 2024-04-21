@@ -43,10 +43,25 @@ def logout():
     return jsonify({"message": "Logged out successfully"}), 200
 
 
+# @app.route('/check_session', methods=['GET'])
+# def check_session():
+#     user_id = session.get('user_id')
+#     if user_id:
+#         return jsonify({"message": "Session valid", "user_id": user_id}), 200
+#     else:
+#         return jsonify({"message": "Session invalid"}), 401
+
+
 @app.route('/check_session', methods=['GET'])
 def check_session():
     user_id = session.get('user_id')
     if user_id:
-        return jsonify({"message": "Session valid", "user_id": user_id}), 200
+        user = User.query.get(user_id)
+        if user:
+            return jsonify({"message": "Session valid", "user_id": user.id}), 200
+        else:
+            # If no user is found for the user_id, it could mean the user has been deleted
+            session.pop('user_id', None)  # Clear the session to handle this edge case
+            return jsonify({"message": "Session invalid"}), 401
     else:
         return jsonify({"message": "Session invalid"}), 401

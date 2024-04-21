@@ -24,7 +24,7 @@ const NewContactForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const companies = useSelector((state) => state.companies.companies);
-  const loggedInUserId = useSelector((state) => state.auth.user.id); 
+  const loggedInUserId = useSelector((state) => state.auth.user);
   console.log("Logged in user",loggedInUserId)
   const initialValues = {
     name: '',

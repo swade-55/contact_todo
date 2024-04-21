@@ -71,8 +71,7 @@ const authSlice = createSlice({
       })
       .addCase(checkSession.fulfilled, (state, action) => {
         state.isAuthenticated = action.payload.isAuthenticated;
-        // Adjusting this to correctly store the user information
-        state.user = { id: action.payload.user_id };
+        state.user = action.payload.user_id;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuthenticated = false;
