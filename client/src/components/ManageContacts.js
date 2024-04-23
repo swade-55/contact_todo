@@ -76,7 +76,7 @@ const ManageContacts = () => {
         <select
           value={selectedCompanyId}
           onChange={handleCompanyChange}
-          className="btn btn-primary btn-lg text-2xl p-2"
+          className="btn btn-primary btn-lg text-4xl p-2"
         >
           <option value="">Select a Company</option>
           {companies.map((company) => (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef  } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -13,6 +13,8 @@ const ManageCompanies = () => {
   const navigate = useNavigate();
   const [editRowId, setEditRowId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const fileInputRef = useRef(null);
 
   const handleOpenModal = () => {
     console.log("Opening Modal");
@@ -29,6 +31,7 @@ const ManageCompanies = () => {
       .required('Name is required')
       .min(2, 'Name must be at least 2 characters')
       .max(50, 'Name must not exceed 50 characters'),
+    image: Yup.mixed().nullable()
   });
 
   const handleBack = () => {
@@ -74,17 +77,16 @@ const ManageCompanies = () => {
                 <td>
                   {editRowId === company.id ? (
                     <Formik
-                      initialValues={{ name: company.name }}
+                    initialValues={{ name: company.name}}
                       validationSchema={companySchema}
                       onSubmit={(values, { setSubmitting }) => {
                         const formData = new FormData();
                         formData.append('name', values.name);
-                        // Append additional fields if necessary
-                      
-                        if (values.image) {
-                          formData.append('image', values.image);
+                        const file = fileInputRef.current.files[0];
+                        if (file) {
+                          formData.append('image', file);
                         }
-                      
+                        // Append additional fields if necessar                      
                         const updatePayload = { id: company.id, formData };
                         dispatch(updateCompany(updatePayload))
                           .then(() => {
@@ -101,15 +103,17 @@ const ManageCompanies = () => {
                       }}
                       
                     >
-                      {({ isSubmitting }) => (
+                      {({ isSubmitting, setFieldValue  }) => (
                         <Form>
                           <Field name="name" type="text" className="input input-bordered input-lg w-full max-w-xs text-lg" />
                           <ErrorMessage name="name" component="div" className="text-error text-lg" />
+                          <input type="file" ref={fileInputRef} className="input input-bordered input-lg w-full max-w-xs text-lg" />
                           <div className="flex justify-end mt-2">
                             <button type="submit" disabled={isSubmitting} className="btn btn-success btn-lg px-4 py-2 text-3xl">Save</button>
                             <button type="button" onClick={handleCancelClick} className="btn btn-ghost btn-lg px-4 py-2 text-3xl">Cancel</button>
                           </div>
                         </Form>
+                        
                       )}
                     </Formik>
                   ) : (

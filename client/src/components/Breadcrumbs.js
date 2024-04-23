@@ -7,26 +7,30 @@ const Breadcrumbs = () => {
 
   const displayNameMapping = {
     'manage-companies': 'Manage Companies',
+    'manage-contacts': 'Manage Contacts',
     'add-company': 'New Company Form',
-    // Add more mappings as needed
+    'layout': ' ',
   };
 
   return (
-    <div className="text-4xl">
-      <Link to="/" className="text-4xl hover:text-blue-600">Home</Link>
+    <div className="text-4xl mb-4">
+      {pathnames.length > 0 && (
+        <Link to="/" className="text-4xl hover:text-blue-600">Home</Link>
+      )}
       {pathnames.map((value, index) => {
         const isLast = index === pathnames.length - 1;
         const to = `/${pathnames.slice(0, index + 1).join('/')}`;
         const displayName = displayNameMapping[value] || value;
 
-        return (
+        return isLast ? (
           <span key={to} className="text-4xl">
             {' > '}
-            {!isLast ? (
-              <Link to={to} className="text-4xl text-blue-600">{displayName}</Link>
-            ) : (
-              <span className="4text-xl">{displayName}</span>
-            )}
+            <span className="text-4xl">{displayName}</span>
+          </span>
+        ) : (
+          <span key={to} className="text-4xl">
+            {' > '}
+            <Link to={to} className="text-4xl text-blue-600">{displayName}</Link>
           </span>
         );
       })}

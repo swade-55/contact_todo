@@ -166,6 +166,8 @@ function App() {
         if (action.type.endsWith('fulfilled')) {
           const userId = action.payload.user_id;
           console.log('useriD', userId)
+          const userIdObject = action.payload;
+          console.log('useriD', userIdObject)
           dispatch(fetchCompanies(userId));
           dispatch(fetchAllContacts(userId));
           dispatch(fetchAllTags());
@@ -173,10 +175,14 @@ function App() {
       });
   }, [dispatch]);
 
+  // // const loggedInUserId = useSelector((state) => state.auth.user.id);
+  // const loggedInUserIdObject = useSelector((state) => state.auth.user);
+  // // console.log('logged in user', loggedInUserId)
+  // console.log('logged in user object', loggedInUserIdObject)
 
   return (
     <BrowserRouter>
-      <Breadcrumbs />
+      {auth.isAuthenticated && <Breadcrumbs />}
       <Routes>
         {/* Public Routes */}
         {!auth.isAuthenticated ? (

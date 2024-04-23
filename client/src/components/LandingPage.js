@@ -8,10 +8,43 @@ const LandingPage = () => {
       <nav className="bg-neutral text-neutral-content p-4">
         <div className="container mx-auto">
           <div className="flex justify-between items-center">
-            <Link to="/" className="btn btn-ghost normal-case text-xl">Contact Management</Link>
+            <Link to="/" className="btn btn-ghost normal-case text-6xl">Contact Management</Link>
             <div>
-              <Link to="/login" className="btn btn-primary mr-2">Log In</Link>
-              <Link to="/signup" className="btn btn-secondary">Sign Up</Link>
+              {/* <Link to="/login" className="btn btn-primary mr-2">Log In</Link>
+              <Link to="/signup" className="btn btn-secondary">Sign Up</Link> */}
+              <Link to="/login">
+              <button
+                className="btn btn-primary btn-lg text-5xl flex justify-center items-center"
+                style={{
+                  padding: '1.25rem 2.5rem', // Equivalent to py-5 px-10 in Tailwind
+                  marginRight: '1rem',
+                  display: 'inline-flex', // Make sure it's flex
+                  alignItems: 'center', // Vertically centers text
+                  justifyContent: 'center', // Horizontally centers text
+                  height: '100%', // Ensure full height is used
+                  width: 'auto', // Adjust width as needed or use specific size
+                  lineHeight: '1' // Adjust line height to ensure vertical centering
+                }}
+              >
+                Log In
+              </button>
+              </Link>
+              <Link to="/signup">
+              <button
+                className="btn btn-secondary btn-lg text-5xl flex justify-center items-center"
+                style={{
+                  padding: '1.25rem 2.5rem', // Equivalent to py-5 px-10 in Tailwind
+                  display: 'inline-flex', // Make sure it's flex
+                  alignItems: 'center', // Vertically centers text
+                  justifyContent: 'center', // Horizontally centers text
+                  height: '100%', // Ensure full height is used
+                  width: 'auto', // Adjust width as needed or use specific size
+                  lineHeight: '1' // Adjust line height to ensure vertical centering
+                }}
+              >
+                Sign Up
+              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -22,7 +55,7 @@ const LandingPage = () => {
         <h1 className="mb-6 text-5xl font-bold">
           Welcome to Contact Management
         </h1>
-        <p className="mb-6">Streamline your workflows with our integrated contact management system.</p>
+        <p className="mb-6 text-4xl">Streamline your workflows with our integrated contact management system.</p>
         <Link to="/signup" className="btn btn-primary btn-lg">
           Get Started
         </Link>
